@@ -56,17 +56,17 @@ export default function Navbar() {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link href="http://localhost:3000/shops" className="nav-link">
+                <Link href="/shops" className="nav-link">
                   Shop
                 </Link>
               </li>
               <li className="nav-item">
-                <Link href="http://localhost:3000/about" className="nav-link">
+                <Link href="/about" className="nav-link">
                   About Us
                 </Link>
               </li>
               <li className="nav-item">
-                <Link href="http://localhost:3000/contact" className="nav-link">
+                <Link href="/contact" className="nav-link">
                   Contact us
                 </Link>
               </li>
