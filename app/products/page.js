@@ -1,7 +1,7 @@
 async function getProducts() {
 
 const res =
-await fetch("/api/products", {
+await fetch("/products", {
   cache: "no-store",
 });
 
