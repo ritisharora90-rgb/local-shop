@@ -2,7 +2,7 @@ async function getProducts() {
 
 const res =
 await fetch(
-"http://localhost:3000/api/products",
+(`${process.env.NEXT_PUBLIC_API_URL}/api/products`),
 {
 cache:"no-store"
 }
