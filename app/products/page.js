@@ -1,22 +1,80 @@
+async function getProducts() {
 
-import Allproduct from "./components/allproduct"
-import Groceries from "./components/grocery"
-import Pulses from "./components/pulses"
-import Footer from "../../components/footer";
-import Navbar from "../../components/navbar";
+const res =
+await fetch(
+"http://localhost:3000/api/products",
+{
+cache:"no-store"
+}
+);
 
-export default function shops(){
-    return(
+return res.json();
 
-        <div className="container-fluid p-0 ">
+}
 
-      <div className="container-fluid  p-0  ">
-       <Navbar/>
-        <Pulses/>
-        <Groceries/>
-        <Allproduct/>
-        
-        <Footer/>
-        </div>
-        </div>
-     )};
+export default async function Products(){
+
+const products =
+await getProducts();
+
+return(
+
+<div className="container">
+
+<h1 className="mb-4">
+Products
+</h1>
+
+<div className="row">
+
+{
+products.map((product)=>(
+
+<div
+key={product._id}
+className="col-md-3 mb-4"
+>
+
+<div className="card p-3">
+
+<img
+src={
+product.image
+}
+alt={
+product.name
+}
+height="200"
+className="w-100"
+/>
+
+<h5 className="mt-3">
+
+{
+product.name
+}
+
+</h5>
+
+<p>
+
+₹{
+product.price
+}
+
+</p>
+
+</div>
+
+</div>
+
+))
+}
+
+</div>
+
+</div>
+
+);
+
+}
