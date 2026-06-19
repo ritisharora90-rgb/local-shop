@@ -5,119 +5,115 @@ import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import { FaShoppingCart } from "react-icons/fa";
 
-export default function Products(){
+export default function Products() {
 
   const router = useRouter();
 
-const [products,setProducts]=useState([]);
+  const [products, setProducts] = useState([]);
 
-const { addToCart }=useCart();
+  const { addToCart } = useCart();
 
-useEffect(()=>{
+  useEffect(() => {
 
-async function getProducts(){
+    async function getProducts() {
 
-const res=await fetch(
-"http://localhost:3000/api/products"
-);
+      try {
 
-const data=
-await res.json();
+        const res = await fetch(
+          "https://local-shop-kappa.vercel.app/api/products",
+          {
+            cache: "no-store",
+          }
+        );
 
-setProducts(data);
+        const data = await res.json();
 
-}
+        setProducts(data);
 
-getProducts();
+      } catch (error) {
 
-},[]);
+        console.log(error);
 
-return(
+      }
 
-<div className="container m-3">
+    }
 
-<div className="d-flex justify-content-between">
+    getProducts();
 
-<h1 className="mb-4">
-Products
-</h1>
+  }, []);
 
-<a
-href="/cart"
+  return (
 
->
-<FaShoppingCart
-size={30}
-/> 
-</a>
+    <div className="container">
 
-</div>
+      <h1 className="my-4">
+        Products
+      </h1>
 
-<div className="row">
+      <div className="row">
 
-{
+        {
+          products?.map((product) => (
 
-products.map((product)=>(
+            <div
+              key={product._id}
+              className="col-md-4 mb-4"
+            >
 
-<div
-key={product._id}
-className="col-md-3 mb-4"
->
+              <div className="card h-100">
 
-<div className="card p-3">
+                {
+                  product.image && (
 
-<img
-src={product.image}
-alt={product.name}
-height="200"
-className="w-100"
-/>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      style={{
+                        height: "250px",
+                        objectFit: "cover"
+                      }}
+                    />
 
-<h5 className="mt-3">
+                  )
+                }
 
-{product.name}
+                <div className="card-body">
 
-</h5>
+                  <h4>
+                    {product.name}
+                  </h4>
 
-<p>
+                  <p>
+                    ₹{product.price || "N/A"}
+                  </p>
 
-₹{product.price}
+                  <p>
+                    {product.description}
+                  </p>
 
-</p>
+                  <button
+                    className="btn btn-dark"
+                    onClick={() => addToCart(product)}
+                  >
 
+                    <FaShoppingCart />
+                    {" "}Add To Cart
 
+                  </button>
 
-<button
-className="btn btn-outline-warning mb-2"
-onClick={()=>
-addToCart(product)
-}
->
+                </div>
 
-Add to cart
+              </div>
 
-</button>
-<button
-className="mb-2 btn btn-outline-success"
-onClick={()=>
-router.push(
-`/checkout/${product._id}`
-)
-}
->Buy Now</button>
+            </div>
 
-</div>
+          ))
+        }
 
-</div>
+      </div>
 
-))
+    </div>
 
-}
-
-</div>
-
-</div>
-
-);
+  );
 
 }
