@@ -93,7 +93,7 @@ export default function Collections() {
 >
                                 <h3 >{item.title}</h3>
                                 <p >{item.desc}</p>
-                                <Link href="http://localhost:3000/products" >Explore Collection →</Link>
+                                <Link href="/products" >Explore Collection →</Link>
                             </div>
 
                         </div>

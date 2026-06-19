@@ -92,13 +92,14 @@ export default function Navbar() {
                 ></input>
               )}
 
-              <button
-                className="al-icon-btn position-relative"
-                aria-label="Wishlist"
+              <Link
+                href="/orderStatus"
+                className="al-icon-btn position-relative text-decoration-none"
+                aria-label="orders"
               >
                 <i className="bi bi-heart" />
                 <span className="al-badge"></span>
-              </button>
+              </Link>
               <Link
                 href="/cart"
                 className="al-icon-btn position-relative text-decoration-none"

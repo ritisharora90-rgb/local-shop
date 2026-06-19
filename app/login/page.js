@@ -21,10 +21,13 @@ export default function Login() {
       style={{ minHeight: "80vh" }}>
       <div className="card shadow p-4" style={{ width: "100%", maxWidth: "420px" }}>
 
-        <h3 className="text-center mb-1 fw-bold">Welcome Back</h3>
-        <p className="text-center text-muted mb-4" style={{fontSize:"14px"}}>
+
+        <h3 className="text-center mb-1 fw-bold">Welcome  to Login page</h3>
+        <p className="text-center text-muted mb-4" style={{ fontSize: "14px" }}>
           Login to your LocalShop account
         </p>
+
+
 
         {error && <div className="alert alert-danger py-2">{error}</div>}
 
@@ -44,7 +47,7 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="text-center text-muted mb-3" style={{fontSize:"13px"}}>
+        <div className="text-center text-muted mb-3" style={{ fontSize: "13px" }}>
           ── or continue with ──
         </div>
 
@@ -54,10 +57,20 @@ export default function Login() {
           <i className="bi bi-google me-2"></i>Continue with Google
         </button>
 
-        <p className="text-center mb-0" style={{fontSize:"14px"}}>
+        <p className="text-center mb-0" style={{ fontSize: "14px" }}>
           Do not have an account?{" "}
           <Link href="/register" className="text-primary">Register here</Link>
         </p>
+        <div className="d-flex justify-content-center align-items-center flex-column">
+          <h5 className="border-rounded fst-italic text-white bg bg-primary p-1 mt-2 w-100 text-center " >IF YOU ARE AN ADMIN </h5>
+          <a
+            href="http://127.0.0.1:8000/admin/login"
+          >
+            <button className="btn btn-dark ">
+              Admin Panel
+            </button>
+          </a>
+        </div>
       </div>
     </div>
   );
