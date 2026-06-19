@@ -64,7 +64,7 @@ export default function Login() {
         <div className="d-flex justify-content-center align-items-center flex-column">
           <h5 className="border-rounded fst-italic text-white bg bg-primary p-1 mt-2 w-100 text-center " >IF YOU ARE AN ADMIN </h5>
           <a
-            href="http://127.0.0.1:8000/admin/login"
+            href="https://local-shop-admin.onrender.com/admin/login"
           >
             <button className="btn btn-dark ">
               Admin Panel
