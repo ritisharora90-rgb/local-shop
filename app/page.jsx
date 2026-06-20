@@ -11,15 +11,15 @@ import Footer from "../components/footer"
 
 export default function Home() {
   return (
-    <div className="container-fluid p-0 ">
+    <div className="container-fluid p-0 " style={{backgroundColor:"#FDFBF7"}}>
 
       <div className="container-fluid  p-0  ">
         
       <Navbar/>
       
-       <Oneproduct/>
 
        <Hero/>
+       <Oneproduct/>
 
        <Cat/>
 

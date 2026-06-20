@@ -20,7 +20,7 @@ export default function Products() {
       try {
 
         const res = await fetch(
-          "https://local-shop-kappa.vercel.app/api/products",
+          "/api/products",
           {
             cache: "no-store",
           }

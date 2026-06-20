@@ -77,3 +77,64 @@
   font-size: 40px;
  }
 }
+/* Premium elevation transitions for the CTA button */
+.hero-btn-primary {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hero-btn-primary:hover {
+  background-color: #15803d !important;
+  box-shadow: 0 12px 24px rgba(22, 163, 74, 0.2) !important;
+  transform: translateY(-1px);
+}
+
+/* Luxury isolation shadow depth mapping */
+.hero-drop-shadow {
+  filter: drop-shadow(0 25px 35px rgba(22, 163, 74, 0.12));
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hero-image-wrapper:hover .hero-drop-shadow {
+  transform: scale(1.03) rotate(0.5deg);
+}
+
+/* Container holding the elements */
+.style-image-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Dynamic zoom and brightness change on hover */
+.style-image-container:hover .category-image {
+  transform: scale(1.04) translateY(-2px);
+  filter: brightness(1.03);
+}
+
+/* Ambient backdrop expansion glow pulse */
+.style-image-container:hover .style-image-glow {
+  width: 85% !important;
+  height: 85% !important;
+  opacity: 0.25 !important;
+}
+
+/* Linear glare strike effect running across the image */
+.style-image-overlay {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  z-index: 2;
+  display: block;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%);
+  transform: skewX(-25deg);
+}
+
+.style-image-container:hover .style-image-overlay {
+  animation: shine-glare 0.85s ease;
+}
+
+@keyframes shine-glare {
+  100% {
+    left: 125%;
+  }
+}
