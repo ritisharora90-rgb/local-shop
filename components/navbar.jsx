@@ -61,8 +61,9 @@ export default function Navbar() {
                 alt="Local Life Logo" 
                 width={130} 
                 height={70} 
-                className="object-fit-contain"
+                className="object-fit-contain rounded"
                 priority
+               
               />
             </div>
             <div className="d-flex flex-column justify-content-center">
