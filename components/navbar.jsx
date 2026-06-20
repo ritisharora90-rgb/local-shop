@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
-import {  FaUser } from "react-icons/fa";
+import { FaShoppingCart,FaSearch, FaUser } from "react-icons/fa";
 import { TbTruckDelivery } from "react-icons/tb";
 
 
@@ -121,8 +121,8 @@ export default function Navbar() {
                   className={`btn p-2 border-0 d-flex align-items-center justify-content-center text-dark rounded-circle ${showSearch ? "ms-1 bg-light" : ""}`}
                   onClick={() => setShowSearch(!showSearch)}
                   aria-label="Toggle search input panel"
-                >
-                  <i className={`bi ${showSearch ? "bi-x-lg text-muted" : "bi-search"}`} style={{ fontSize: "18px" }} />
+                ><FaSearch />
+                  {/* <i className={` ${showSearch ? "bi-x-lg text-muted" : "bi-search"}`} style={{ fontSize: "18px" }} /> */}
                 </button>
               </div>
 
@@ -140,8 +140,8 @@ export default function Navbar() {
                 href="/cart"
                 className="position-relative p-2 d-flex align-items-center justify-content-center text-dark rounded-circle hover-bg-light transition-colors"
                 title="Shopping Bag"
-              >
-                <i className="bi bi-bag" style={{ fontSize: "19px" }} />
+              ><FaShoppingCart />
+                
                 {cart.length > 0 && (
                   <span 
                     className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success font-body fw-bold d-flex align-items-center justify-content-center px-1.5 py-1" 
