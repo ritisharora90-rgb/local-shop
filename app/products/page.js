@@ -1,119 +1,68 @@
 'use client';
-
-import { useEffect, useState } from "react";
-import { useCart } from "@/context/CartContext";
-import { useRouter } from "next/navigation";
-import { FaShoppingCart } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function Products() {
-
-  const router = useRouter();
-
   const [products, setProducts] = useState([]);
-
-  const { addToCart } = useCart();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
-    async function getProducts() {
-
+    async function fetchItems() {
       try {
-
-        const res = await fetch(
-          "/api/products",
-          {
-            cache: "no-store",
-          }
-        );
-
+        const res = await fetch("https://local-shop-admin.onrender.com/api/products");
         const data = await res.json();
-
         setProducts(data);
-
-      } catch (error) {
-
-        console.log(error);
-
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      } finally {
+        setLoading(false);
       }
-
     }
-
-    getProducts();
-
+    fetchItems();
   }, []);
 
+  if (loading) return <p style={{ padding: "40px", fontFamily: "sans-serif" }}>Loading Fresh Groceries...</p>;
+
   return (
+    <div style={{ padding: "40px 20px", backgroundColor: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, system-ui, sans-serif" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        <h1 style={{ fontSize: "2.25rem", marginBottom: "32px", fontWeight: "700", color: "#111827" }}>
+          Fresh Grocery Items
+        </h1>
 
-    <div className="container">
+        <style dangerouslySetInnerHTML={{__html: `
+          .grocery-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; transition: all 0.25s ease-in-out; }
+          .grocery-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-color: #d1d5db; }
+          .cart-btn { flex: 1; padding: 10px; background-color: #ffffff; border: 1px solid #10b981; color: #10b981; border-radius: 6px; font-weight: 600; cursor: pointer; }
+          .cart-btn:hover { background-color: #ecfdf5; }
+          .buy-btn { flex: 1; padding: 10px; background-color: #10b981; border: 1px solid #10b981; color: #ffffff; border-radius: 6px; font-weight: 600; cursor: pointer; }
+          .buy-btn:hover { background-color: #059669; }
+        `}} />
 
-      <h1 className="my-4">
-        Products
-      </h1>
-
-      <div className="row">
-
-        {
-          products?.map((product) => (
-
-            <div
-              key={product._id}
-              className="col-md-4 mb-4"
-            >
-
-              <div className="card h-100">
-
-                {
-                  product.image && (
-
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      style={{
-                        height: "250px",
-                        objectFit: "cover"
-                      }}
-                    />
-
-                  )
-                }
-
-                <div className="card-body">
-
-                  <h4>
-                    {product.name}
-                  </h4>
-
-                  <p>
-                    ₹{product.price || "N/A"}
-                  </p>
-
-                  <p>
-                    {product.description}
-                  </p>
-
-                  <button
-                    className="btn btn-dark"
-                    onClick={() => addToCart(product)}
-                  >
-
-                    <FaShoppingCart />
-                    {" "}Add To Cart
-
-                  </button>
-
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "24px" }}>
+          {products.map((item) => (
+            <div key={item.id} className="grocery-card">
+              <Link href={`/products/${item.id}`} style={{ textDecoration: "none", color: "inherit", display: "block", marginBottom: "16px" }}>
+                <div style={{ overflow: "hidden", borderRadius: "8px", backgroundColor: "#f3f4f6", height: "200px" }}>
+                  <img src={item.image} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }} />
                 </div>
+                <h2 style={{ fontSize: "1.1rem", fontWeight: "600", color: "#1f2937", margin: "12px 0 4px 0" }}>{item.name}</h2>
+                <div style={{ fontSize: "1.15rem", fontWeight: "700", color: "#111827" }}>{item.price ? `₹${item.price}` : "Fresh Stock"}</div>
+              </Link>
 
+              {/* Now browser click alerts work seamlessly without breaking server code */}
+              <div style={{ display: "flex", gap: "10px", marginTop: "auto" }}>
+                <button className="cart-btn" onClick={() => alert(`Added ${item.name} to cart!`)}>
+                  Add to cart
+                </button>
+                <button className="buy-btn" onClick={() => alert(`Proceeding to checkout for ${item.name}`)}>
+                  Buy now
+                </button>
               </div>
-
             </div>
-
-          ))
-        }
-
+          ))}
+        </div>
       </div>
-
     </div>
-
   );
-
 }
