@@ -1,77 +1,121 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+createContext,
+useContext,
+useEffect,
+useState,
+} from "react";
 
 const CartContext = createContext();
 
-export function CartProvider({ children }) {
-  const [cart, setCart] = useState([]);
+export function CartProvider({
+children,
+}) {
 
-  // Load cart from localStorage
-  useEffect(()=>{
+const [cart,setCart] =
+useState([]);
+
+
+// Load cart from MongoDB
+useEffect(()=>{
+
+async function getCart(){
 
 try{
 
-const saved=
-localStorage.getItem(
-"localShopCart"
+const res =
+await fetch(
+"https://local-shop-admin.onrender.com/api/cart/guest"
 );
+
+const data =
+await res.json();
 
 setCart(
-saved
-? JSON.parse(saved)
-: []
+data.items || []
 );
 
-}catch{
+}catch(err){
+
+console.log(err);
 
 setCart([]);
 
 }
 
+}
+
+getCart();
+
 },[]);
 
-  // Save cart to localStorage
- useEffect(() => {
 
-if(cart.length===0){
+// Save cart to MongoDB
+useEffect(()=>{
 
-localStorage.removeItem(
-"localShopCart"
+if(cart.length===0)
+return;
+
+async function saveCart(){
+
+try{
+
+await fetch(
+"https://local-shop-admin.onrender.com/api/cart",
+{
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json",
+},
+
+body:
+JSON.stringify({
+items:cart
+}),
+}
 );
 
-}else{
+}catch(err){
 
-localStorage.setItem(
-"localShopCart",
-JSON.stringify(cart)
-);
+console.log(err);
 
 }
 
+}
+
+saveCart();
+
 },[cart]);
 
-  // Add product to cart
-const addToCart = (product) => {
+
+// Add product
+const addToCart =
+(product)=>{
 
 setCart((prev)=>{
 
-const existing=
+const existing =
 prev.find(
 (item)=>
-item._id===product._id
+item._id === product._id
 );
 
 if(existing){
 
-return prev.map((item)=>
+return prev.map(
+(item)=>
 
-item._id===product._id
+item._id === product._id
+
 ? {
 ...item,
 quantity:
-(item.quantity||1)+1
+(item.quantity || 1)+1,
 }
+
 : item
 
 );
@@ -84,8 +128,8 @@ return [
 
 {
 ...product,
-quantity:1
-}
+quantity:1,
+},
 
 ];
 
@@ -93,24 +137,43 @@ quantity:1
 
 };
 
-  // Remove product completely
-  const removeFromCart = (_id) => {
-    setCart((prev) =>
-      prev.filter((item) => item._id !== _id)
-    );
-  };
 
-  return (
-    <CartContext.Provider
-      value={{
-        cart,
-        addToCart,
-        removeFromCart,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
-  );
+// Remove product
+const removeFromCart =
+(_id)=>{
+
+setCart(
+(prev)=>
+
+prev.filter(
+(item)=>
+item._id !== _id
+)
+
+);
+
+};
+
+
+return(
+
+<CartContext.Provider
+value={{
+cart,
+addToCart,
+removeFromCart,
+}}
+>
+
+{children}
+
+</CartContext.Provider>
+
+);
+
 }
 
-export const useCart = () => useContext(CartContext);
+export const useCart =
+()=>useContext(
+CartContext
+);

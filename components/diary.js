@@ -170,10 +170,8 @@ function ProductCard({ product, addToCart, router, activeCard, showPopup }) {
           <div className="d-flex gap-2">
             <button
               className="btn btn-outline-success w-50 fw-semibold"
-              onClick={(e) => {
-                e.stopPropagation();
-                addToCart(product);
-              }}
+              onClick={() => addToCart(product)}
+              
             >
               Add to cart
             </button>
