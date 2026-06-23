@@ -13,6 +13,35 @@ export function CartProvider({
 children,
 }) {
 
+// Unique cart per browser/user
+const [guestId] =
+useState(()=>{
+
+if(typeof window==="undefined")
+return "";
+
+let id =
+localStorage.getItem(
+"guestId"
+);
+
+if(!id){
+
+id =
+crypto.randomUUID();
+
+localStorage.setItem(
+"guestId",
+id
+);
+
+}
+
+return id;
+
+});
+
+
 const [cart,setCart] =
 useState([]);
 
@@ -20,13 +49,16 @@ useState([]);
 // Load cart from MongoDB
 useEffect(()=>{
 
+if(!guestId)
+return;
+
 async function getCart(){
 
 try{
 
 const res =
 await fetch(
-"https://local-shop-admin.onrender.com/api/cart/guest"
+`http://127.0.0.1:8000/api/cart/${guestId}`
 );
 
 const data =
@@ -48,13 +80,13 @@ setCart([]);
 
 getCart();
 
-},[]);
+},[guestId]);
 
 
 // Save cart to MongoDB
 useEffect(()=>{
 
-if(cart.length===0)
+if(!guestId)
 return;
 
 async function saveCart(){
@@ -62,7 +94,7 @@ async function saveCart(){
 try{
 
 await fetch(
-"https://local-shop-admin.onrender.com/api/cart",
+"http://127.0.0.1:8000/api/cart",
 {
 method:"POST",
 
@@ -73,7 +105,13 @@ headers:{
 
 body:
 JSON.stringify({
-items:cart
+
+user_id:
+guestId,
+
+items:
+cart,
+
 }),
 }
 );
@@ -88,7 +126,10 @@ console.log(err);
 
 saveCart();
 
-},[cart]);
+},[
+cart,
+guestId
+]);
 
 
 // Add product
@@ -97,10 +138,20 @@ const addToCart =
 
 setCart((prev)=>{
 
+const productId =
+product._id ||
+product.id;
+
 const existing =
 prev.find(
 (item)=>
-item._id === product._id
+
+(item._id || item.id)
+
+===
+
+productId
+
 );
 
 if(existing){
@@ -108,10 +159,17 @@ if(existing){
 return prev.map(
 (item)=>
 
-item._id === product._id
+(item._id || item.id)
 
-? {
+===
+
+productId
+
+?
+
+{
 ...item,
+
 quantity:
 (item.quantity || 1)+1,
 }
@@ -128,6 +186,7 @@ return [
 
 {
 ...product,
+
 quantity:1,
 },
 
@@ -140,14 +199,20 @@ quantity:1,
 
 // Remove product
 const removeFromCart =
-(_id)=>{
+(id)=>{
 
 setCart(
 (prev)=>
 
 prev.filter(
 (item)=>
-item._id !== _id
+
+(item._id || item.id)
+
+!==
+
+id
+
 )
 
 );
