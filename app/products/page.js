@@ -1,13 +1,15 @@
 'use client';
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useCart } from "@/context/CartContext"; // 👈 1. Import your custom cart context hook
+import { useRouter } from "next/navigation"; // 👈 1. Import Next.js router
+import { useCart } from "@/context/CartContext"; 
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  const { addToCart } = useCart(); // 👈 2. Destructure the real function here
+  const { addToCart } = useCart(); 
+  const router = useRouter(); // 👈 2. Initialize the router instance
 
   useEffect(() => {
     async function fetchItems() {
@@ -39,38 +41,42 @@ export default function Products() {
           .grocery-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-color: #d1d5db; }
           .cart-btn { flex: 1; padding: 10px; background-color: #ffffff; border: 1px solid #10b981; color: #10b981; border-radius: 6px; font-weight: 600; cursor: pointer; }
           .cart-btn:hover { background-color: #ecfdf5; }
-          .buy-btn { flex: 1; padding: 10px; background-color: #10b981; border: 1px solid #10b981; color: #ffffff; border-radius: 6px; font-weight: 600; cursor: pointer; }
+          .buy-btn { flex: 1; padding: 10px; background-color: #10b981; border: 1px solid #10b981; color: #ffffff; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
           .buy-btn:hover { background-color: #059669; }
         `}} />
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "24px" }}>
           {products.map((item) => {
-            // MongoDB uses _id. If your API structure returns item.id instead, this keeps it completely safe.
             const itemId = item._id || item.id;
 
             return (
               <div key={itemId} className="grocery-card">
                 <Link href={`/products/${itemId}`} style={{ textDecoration: "none", color: "inherit", display: "block", marginBottom: "16px" }}>
                   <div style={{ overflow: "hidden", borderRadius: "8px", backgroundColor: "#f3f4f6", height: "200px" }}>
-                    <img src={item.image || item.image_url} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }} />
+                    <img src={item.image || item.image_url || "https://placehold.co/140x140?text=No+Image"} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }} />
                   </div>
                   <h2 style={{ fontSize: "1.1rem", fontWeight: "600", color: "#1f2937", margin: "12px 0 4px 0" }}>{item.name}</h2>
                   <div style={{ fontSize: "1.15rem", fontWeight: "700", color: "#111827" }}>{item.price ? `₹${item.price}` : "Fresh Stock"}</div>
                 </Link>
 
                 <div style={{ display: "flex", gap: "10px", marginTop: "auto" }}>
-                  {/* 3. Replaced dummy alert with the real addToCart context function */}
                   <button 
                     className="cart-btn" 
                     onClick={() => {
                       addToCart(item);
-                      alert(`Added ${item.name} to cart!`); // Kept the alert so you still get a visual confirmation
+                      alert(`Added ${item.name} to cart!`); 
                     }}
                   >
                     Add to cart
                   </button>
                   
-                  <button className="buy-btn" onClick={() => alert(`Proceeding to checkout for ${item.name}`)}>
+                  {/* 3. Improved Buy Now button with dynamic routing */}
+                  <button 
+                    className="buy-btn" 
+                    onClick={() => {
+                      router.push(`/checkout/${itemId}?qty=1`);
+                    }}
+                  >
                     Buy now
                   </button>
                 </div>

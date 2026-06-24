@@ -105,7 +105,7 @@ export default function CartPage() {
                         {/* Crisp Framework-Optimized Image Container */}
                         <div className="position-relative d-flex align-items-center justify-content-center w-100" style={{ height: "160px" }}>
                           <Image
-                            src={item.image || item.image_url}
+                            src={item.image || item.image_url || "/placeholders/no-image.png"}
                             alt={item.name || "Product image"}
                             width={140}
                             height={140}
