@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/dbConnect'; // Adjust this path to match where your database connection utility lives
+import { connectDB } from "@/lib/mongodb"; // Adjust this path to match where your database connection utility lives
 import Cart from '@/models/Cart';        // Adjust this path to match your Cart model file location
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route'; // Adjust this path to match your NextAuth route configuration
@@ -9,7 +9,7 @@ import { authOptions } from '../auth/[...nextauth]/route'; // Adjust this path t
 // ==========================================
 export async function GET() {
   try {
-    await dbConnect();
+    await connectDB();
     const session = await getServerSession(authOptions);
 
     // If no user is logged in, return an unauthorized response
