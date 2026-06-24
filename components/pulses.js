@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import { useState } from "react"; // 👈 Added useState for the pop animation tracking
 
 const pulseProduct = [
   { id: "p1", name: "Premium Toor Dal", price: 50, image: "/pulses/pulse1.jpg", desc: "Unpolished, high-protein pigeon peas for your daily dal." },
@@ -16,6 +17,14 @@ const pulseProduct = [
 export default function Pulses() {
   const { addToCart } = useCart();
   const router = useRouter();
+  const [activeCard, setActiveCard] = useState(null); // 👈 Track pop animation state
+
+  const showPopup = (id) => {
+    setActiveCard(id);
+    setTimeout(() => {
+      setActiveCard(null);
+    }, 300);
+  };
 
   return (
     <section className="container-fluid px-3 px-md-4 py-5 bg-light overflow-hidden">
@@ -29,25 +38,39 @@ export default function Pulses() {
         </span>
       </div>
 
-      {/* 1. DESKTOP CAROUSEL: Visible on md screens and up (3 cards per slide) */}
+      {/* 1. DESKTOP CAROUSEL */}
       <div id="productPulseDesktop" className="carousel slide d-none d-md-block py-4" data-bs-ride="carousel">
         <div className="carousel-inner px-md-5">
-          
+
           <div className="carousel-item active">
             <div className="row g-4 justify-content-center">
               {pulseProduct.slice(0, 3).map((product) => (
                 <div key={`desk-1-${product.id}`} className="col-md-6 col-lg-4">
-                  <ProductCard product={product} addToCart={addToCart} router={router} priority={true} />
+                  <ProductCard 
+                    product={product} 
+                    addToCart={addToCart} 
+                    router={router} 
+                    priority={true} 
+                    activeCard={activeCard}
+                    showPopup={showPopup}
+                  />
                 </div>
               ))}
             </div>
           </div>
-          
+
           <div className="carousel-item">
             <div className="row g-4 justify-content-center">
               {pulseProduct.slice(3, 6).map((product) => (
                 <div key={`desk-2-${product.id}`} className="col-md-6 col-lg-4">
-                  <ProductCard product={product} addToCart={addToCart} router={router} priority={false} />
+                  <ProductCard 
+                    product={product} 
+                    addToCart={addToCart} 
+                    router={router} 
+                    priority={false} 
+                    activeCard={activeCard}
+                    showPopup={showPopup}
+                  />
                 </div>
               ))}
             </div>
@@ -66,13 +89,20 @@ export default function Pulses() {
         </button>
       </div>
 
-      {/* 2. MOBILE CAROUSEL: Visible on mobile only (1 card per slide) */}
+      {/* 2. MOBILE CAROUSEL */}
       <div id="productPulseMobile" className="carousel slide d-md-none py-3" data-bs-ride="carousel">
         <div className="carousel-inner">
           {pulseProduct.map((product, index) => (
             <div key={`mob-${product.id}`} className={`carousel-item ${index === 0 ? "active" : ""}`}>
               <div className="px-3">
-                <ProductCard product={product} addToCart={addToCart} router={router} priority={index === 0} />
+                <ProductCard 
+                  product={product} 
+                  addToCart={addToCart} 
+                  router={router} 
+                  priority={index === 0} 
+                  activeCard={activeCard}
+                  showPopup={showPopup}
+                />
               </div>
             </div>
           ))}
@@ -107,7 +137,6 @@ export default function Pulses() {
           border-color: rgba(22, 163, 74, 0.15) !important;
         }
 
-        /* Deeper card layer transformation: Scales picture container individually */
         .hover-lift:hover .inner-img-wrapper {
           transform: scale(1.06);
         }
@@ -120,26 +149,51 @@ export default function Pulses() {
           opacity: 1;
         }
         
-        /* Fixed black color for arrows inside white rounded circles */
         .carousel-control-next-icon, .carousel-control-prev-icon {
           filter: none !important;
+        }
+
+        /* 🚀 Added Pop Animation to keep consistent with Diary layout style */
+        .popup {
+          animation: pop 0.3s ease-in-out;
+        }
+
+        @keyframes pop {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.06); }
+          100% { transform: scale(1); }
         }
       `}</style>
     </section>
   );
 }
 
-{/* Extracted Shared Sub-Component */}
-function ProductCard({ product, addToCart, router, priority }) {
+{/* Extracted Shared Sub-Component */ }
+function ProductCard({ product, addToCart, router, priority, activeCard, showPopup }) {
+  
+  // Custom execution flow matching Diary layout
+  const handleCardClick = () => {
+    showPopup(product.id);
+    
+    // Smooth delay allows pop animation to resolve cleanly before page pushes
+    setTimeout(() => {
+      router.push(`/products/${product.id}`);
+    }, 200);
+  };
+
   return (
-    <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-lift">
+    <div 
+      className={`card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-lift ${activeCard === product.id ? "popup" : ""}`}
+      onClick={handleCardClick}
+      style={{ cursor: "pointer" }}
+    >
       {/* Image Container Aspect Ratio Layout */}
       <div className="position-relative bg-light d-flex align-items-center justify-content-center p-4" style={{ height: "260px" }}>
         <div className="inner-img-wrapper">
-          <Image 
-            src={product.image} 
-            width={220} 
-            height={220} 
+          <Image
+            src={product.image}
+            width={220}
+            height={220}
             alt={product.name}
             className="object-fit-contain"
             priority={priority}
@@ -166,20 +220,25 @@ function ProductCard({ product, addToCart, router, priority }) {
               ₹{product.price}
             </span>
           </div>
-
           <div className="d-flex gap-2">
-            <button
-              className="btn btn-outline-success font-body font-medium w-50 py-2 rounded-3 text-sm transition-colors"
-              onClick={() => addToCart(product)}
+            <button 
+              className="btn btn-outline-success w-50" 
+              onClick={(e) => { 
+                e.stopPropagation(); // 👈 Stops redirect when clicking Add To Cart
+                addToCart(product); 
+                alert(`Added ${product.name} to cart!`);
+              }}
             >
-              Add to Cart
+              Add to cart
             </button>
-            <button
-              className="btn btn-success font-body font-medium w-50 py-2 rounded-3 text-sm shadow-sm"
-              style={{ backgroundColor: '#16a34a', border: 'none' }}
-              onClick={() => router.push(`/checkout/${product.id}`)}
+            <button 
+              className="btn btn-success w-50" 
+              onClick={(e) => { 
+                e.stopPropagation(); // 👈 Stops redirect when clicking Buy
+                router.push(`/checkout/${product.id}`); 
+              }}
             >
-              Buy Now
+              Buy
             </button>
           </div>
         </div>

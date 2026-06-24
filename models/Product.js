@@ -1,27 +1,27 @@
 import mongoose from "mongoose";
 
 const ProductSchema =
-new mongoose.Schema({
+    new mongoose.Schema({
 
-name:String,
+        name: String,
 
-price:Number,
+        price: Number,
 
-category:String,
+        category: String,
 
-description:String,
+        description: String,
 
-image:String
+        image: String
 
-},
-{
-collection:"products"
-}
-);
+    },
+        {
+            collection: "products"
+        }
+    );
 
 export default
-mongoose.models.Product ||
-mongoose.model(
-"Product",
-ProductSchema
-);
+    mongoose.models.Product ||
+    mongoose.model(
+        "Product",
+        ProductSchema
+    );

@@ -43,7 +43,6 @@ export default function DiaryPage() {
       </div>
 
       {/* Desktop */}
-      {/* Added py-4 to give space so the top/bottom shadows and scale effects aren't cut off */}
       <div id="productDiaryDesktop" className="carousel slide d-none d-md-block py-4" data-bs-ride="carousel">
         <div className="carousel-inner px-5">
           {desktopSlides.map((group, index) => (
@@ -98,7 +97,6 @@ export default function DiaryPage() {
       </div>
 
       <style jsx global>{`
-        /* Global/Scoped transitions for our elements */
         .diary-card {
           transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
           border: none;
@@ -107,30 +105,22 @@ export default function DiaryPage() {
           box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
           background: #ffffff;
         }
-
         .diary-card .card-img-wrapper {
           transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
-        /* 🚀 The Ultimate Hover State */
         .diary-card:hover {
           transform: translateY(-12px) scale(1.03);
           box-shadow: 0 22px 40px rgba(0, 0, 0, 0.12);
         }
-
-        /* Subtle image pop up forward inside the card on hover */
         .diary-card:hover .card-img-wrapper {
           transform: scale(1.08);
         }
-
         .custom-nav {
           width: 4%;
         }
-
         .popup {
           animation: pop 0.3s ease-in-out;
         }
-
         @keyframes pop {
           0% { transform: scale(1); }
           50% { transform: scale(1.06); }
@@ -142,13 +132,21 @@ export default function DiaryPage() {
 }
 
 function ProductCard({ product, addToCart, router, activeCard, showPopup }) {
+  const handleCardClick = () => {
+    showPopup(product.id);
+    
+    // Delays redirection slightly to let the "pop" animation finish
+    setTimeout(() => {
+      router.push(`/products/${product.id}`);
+    }, 200);
+  };
+
   return (
     <div
       className={`card diary-card h-100 ${activeCard === product.id ? "popup" : ""}`}
-      onClick={() => showPopup(product.id)}
+      onClick={handleCardClick}
       style={{ cursor: "pointer" }}
     >
-      {/* Added .card-img-wrapper to targets the image container for secondary animation */}
       <div className="bg-light d-flex justify-content-center align-items-center p-4" style={{ height: "240px" }}>
         <div className="card-img-wrapper">
           <Image src={product.image} width={180} height={180} alt={product.name} priority={product.id === "d1"} />
@@ -170,15 +168,17 @@ function ProductCard({ product, addToCart, router, activeCard, showPopup }) {
           <div className="d-flex gap-2">
             <button
               className="btn btn-outline-success w-50 fw-semibold"
-              onClick={() => addToCart(product)}
-              
+              onClick={(e) => {
+                e.stopPropagation(); // 👈 Stops the card redirect from firing
+                addToCart(product);
+              }}
             >
               Add to cart
             </button>
             <button
               className="btn btn-success w-50 fw-semibold"
               onClick={(e) => {
-                e.stopPropagation();
+                e.stopPropagation(); // 👈 Stops the card redirect from firing
                 router.push(`/checkout/${product.id}`);
               }}
             >

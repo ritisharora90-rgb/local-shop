@@ -19,11 +19,14 @@ export default function Snacks() {
   const router = useRouter();
   const [activeCard, setActiveCard] = useState(null);
 
-  const showPopup = (id) => {
+  // Updated to manage the animation sequence and redirect smoothly
+  const handleProductClick = (id) => {
     setActiveCard(id);
+    
     setTimeout(() => {
       setActiveCard(null);
-    }, 300);
+      router.push(`/products/${id}`); // 👈 Triggers navigation to your dynamic product details page
+    }, 200);
   };
 
   // Helper function to chunk array into groups of 3 for desktop layout
@@ -53,7 +56,7 @@ export default function Snacks() {
                 {chunk.map((product) => (
                   <div key={product.id} className="col-md-4 d-flex justify-content-center">
                     <div
-                      onClick={() => showPopup(product.id)}
+                      onClick={() => handleProductClick(product.id)} // 👈 Updated handler
                       className={`card snack-card ${activeCard === product.id ? "popup" : ""}`}
                       style={{ width: "100%", maxWidth: "400px", cursor: "pointer" }}
                     >
@@ -71,8 +74,25 @@ export default function Snacks() {
                             <strong>₹{product.price}</strong>
                           </div>
                           <div className="d-flex gap-2">
-                            <button className="btn btn-outline-success w-50" onClick={(e) => { e.stopPropagation(); addToCart(product); }}>Add to cart</button>
-                            <button className="btn btn-success w-50" onClick={(e) => { e.stopPropagation(); router.push(`/checkout/${product.id}`); }}>Buy</button>
+                            <button 
+                              className="btn btn-outline-success w-50" 
+                              onClick={(e) => { 
+                                e.stopPropagation(); // 👈 Stops redirect execution line
+                                addToCart(product); 
+                                alert(`Added ${product.name} to cart!`);
+                              }}
+                            >
+                              Add to cart
+                            </button>
+                            <button 
+                              className="btn btn-success w-50" 
+                              onClick={(e) => { 
+                                e.stopPropagation(); // 👈 Stops redirect execution line
+                                router.push(`/checkout/${product.id}`); 
+                              }}
+                            >
+                              Buy
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -98,7 +118,7 @@ export default function Snacks() {
             <div key={product.id} className={`carousel-item ${index === 0 ? "active" : ""}`}>
               <div className="d-flex justify-content-center px-4">
                 <div
-                  onClick={() => showPopup(product.id)}
+                  onClick={() => handleProductClick(product.id)} // 👈 Updated handler
                   className={`card snack-card ${activeCard === product.id ? "popup" : ""}`}
                   style={{ width: "100%", maxWidth: "340px", cursor: "pointer" }}
                 >
@@ -113,8 +133,25 @@ export default function Snacks() {
                       <strong>₹{product.price}</strong>
                     </div>
                     <div className="d-flex gap-2">
-                      <button className="btn btn-outline-success w-50" onClick={(e) => { e.stopPropagation(); addToCart(product); }}>Add to cart</button>
-                      <button className="btn btn-success w-50" onClick={(e) => { e.stopPropagation(); router.push(`/checkout/${product.id}`); }}>Buy</button>
+                      <button 
+                        className="btn btn-outline-success w-50" 
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          addToCart(product); 
+                          alert(`Added ${product.name} to cart!`);
+                        }}
+                      >
+                        Add to cart
+                      </button>
+                      <button 
+                        className="btn btn-success w-50" 
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          router.push(`/checkout/${product.id}`); 
+                        }}
+                      >
+                        Buy
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -130,7 +167,7 @@ export default function Snacks() {
         </button>
       </div>
 
-      <style jsx>{`
+      <style jsx global>{`
         .snack-card {
           border: none;
           border-radius: 24px;
@@ -139,7 +176,6 @@ export default function Snacks() {
           box-shadow: 0 8px 25px rgba(0, 0, 0, .05);
         }
 
-        /* Hover animation causing the card to smoothly pop out towards the user */
         .snack-card:hover {
           transform: translateY(-8px) scale(1.03);
           box-shadow: 0 20px 40px rgba(0, 0, 0, .12);

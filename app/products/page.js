@@ -1,10 +1,13 @@
 'use client';
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useCart } from "@/context/CartContext"; // 👈 1. Import your custom cart context hook
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const { addToCart } = useCart(); // 👈 2. Destructure the real function here
 
   useEffect(() => {
     async function fetchItems() {
@@ -30,7 +33,8 @@ export default function Products() {
           Fresh Grocery Items
         </h1>
 
-        <style dangerouslySetInnerHTML={{__html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           .grocery-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; transition: all 0.25s ease-in-out; }
           .grocery-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-color: #d1d5db; }
           .cart-btn { flex: 1; padding: 10px; background-color: #ffffff; border: 1px solid #10b981; color: #10b981; border-radius: 6px; font-weight: 600; cursor: pointer; }
@@ -40,27 +44,39 @@ export default function Products() {
         `}} />
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "24px" }}>
-          {products.map((item) => (
-            <div key={item.id} className="grocery-card">
-              <Link href={`/products/${item.id}`} style={{ textDecoration: "none", color: "inherit", display: "block", marginBottom: "16px" }}>
-                <div style={{ overflow: "hidden", borderRadius: "8px", backgroundColor: "#f3f4f6", height: "200px" }}>
-                  <img src={item.image} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }} />
-                </div>
-                <h2 style={{ fontSize: "1.1rem", fontWeight: "600", color: "#1f2937", margin: "12px 0 4px 0" }}>{item.name}</h2>
-                <div style={{ fontSize: "1.15rem", fontWeight: "700", color: "#111827" }}>{item.price ? `₹${item.price}` : "Fresh Stock"}</div>
-              </Link>
+          {products.map((item) => {
+            // MongoDB uses _id. If your API structure returns item.id instead, this keeps it completely safe.
+            const itemId = item._id || item.id;
 
-              {/* Now browser click alerts work seamlessly without breaking server code */}
-              <div style={{ display: "flex", gap: "10px", marginTop: "auto" }}>
-                <button className="cart-btn" onClick={() => alert(`Added ${item.name} to cart!`)}>
-                  Add to cart
-                </button>
-                <button className="buy-btn" onClick={() => alert(`Proceeding to checkout for ${item.name}`)}>
-                  Buy now
-                </button>
+            return (
+              <div key={itemId} className="grocery-card">
+                <Link href={`/products/${itemId}`} style={{ textDecoration: "none", color: "inherit", display: "block", marginBottom: "16px" }}>
+                  <div style={{ overflow: "hidden", borderRadius: "8px", backgroundColor: "#f3f4f6", height: "200px" }}>
+                    <img src={item.image || item.image_url} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }} />
+                  </div>
+                  <h2 style={{ fontSize: "1.1rem", fontWeight: "600", color: "#1f2937", margin: "12px 0 4px 0" }}>{item.name}</h2>
+                  <div style={{ fontSize: "1.15rem", fontWeight: "700", color: "#111827" }}>{item.price ? `₹${item.price}` : "Fresh Stock"}</div>
+                </Link>
+
+                <div style={{ display: "flex", gap: "10px", marginTop: "auto" }}>
+                  {/* 3. Replaced dummy alert with the real addToCart context function */}
+                  <button 
+                    className="cart-btn" 
+                    onClick={() => {
+                      addToCart(item);
+                      alert(`Added ${item.name} to cart!`); // Kept the alert so you still get a visual confirmation
+                    }}
+                  >
+                    Add to cart
+                  </button>
+                  
+                  <button className="buy-btn" onClick={() => alert(`Proceeding to checkout for ${item.name}`)}>
+                    Buy now
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

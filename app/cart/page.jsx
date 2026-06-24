@@ -36,6 +36,7 @@ export default function CartPage() {
           transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
                       box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
                       border-color 0.3s ease;
+          cursor: pointer;
         }
         .cart-item-card:hover {
           transform: translateY(-4px);
@@ -79,7 +80,7 @@ export default function CartPage() {
             <p className="text-secondary fw-medium small mb-4 mx-auto" style={{ maxWidth: "360px" }}>
               Looks like you haven't added anything yet. Explore nearby local shops to stock up on essentials.
             </p>
-            <Link href="/" className="btn btn-success btn-modern px-4 py-2 rounded-pill">
+            <Link href="/" className="btn btn-success btn-modern px-4 py-2 rounded-pill text-decoration-none">
               Return to Shop
             </Link>
           </div>
@@ -90,51 +91,65 @@ export default function CartPage() {
             {/* ITEMS COLUMN */}
             <div className="col-12 col-lg-8">
               <div className="row g-3">
-                {cart.map((item, index) => (
-                  <div key={item._id || index} className="col-12 col-sm-6 col-md-4">
-                    <div className="bg-white border p-3 d-flex flex-column h-100 align-items-center justify-content-between text-center rounded-4 shadow-sm cart-item-card">
-                      
-                      {/* Crisp Framework-Optimized Image Container */}
-                      <div className="position-relative d-flex align-items-center justify-content-center w-100" style={{ height: "160px" }}>
-                        <Image
-                          src={item.image}
-                          alt={item.name || "Product image"}
-                          width={140}
-                          height={140}
-                          className="object-fit-contain"
-                          unoptimized // Remove this line if using external content delivery networks (CDNs)
-                        />
-                      </div>
+                {cart.map((item, index) => {
+                  // 1. Resolve target ID safely whether it uses local mock 'id' or database '_id'
+                  const itemId = item._id || item.id;
 
-                      {/* Info & CTA Layout Block */}
-                      <div className="mt-3 w-100">
-                        <h5 className="fw-bold text-dark text-truncate mb-1" style={{ fontSize: "0.95rem" }}>
-                          {item.name}
-                        </h5>
-                        <p className="fw-extrabold text-success mb-3 fs-5">
-                          ₹{item.price}
-                        </p>
-
-                        <div className="d-flex flex-column gap-2">
-                          <button
-                            className="btn btn-outline-danger btn-modern btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
-                            onClick={() => removeFromCart(item._id)}
-                          >
-                            <FaTrash size={12} /> <span>Remove</span>
-                          </button>
-
-                          <button
-                            className="btn btn-success btn-modern btn-sm w-100 text-white"
-                            onClick={() => router.push(`/checkout/${item._id}`)}
-                          >
-                            Buy Now
-                          </button>
+                  return (
+                    <div key={itemId || index} className="col-12 col-sm-6 col-md-4">
+                      <div 
+                        className="bg-white border p-3 d-flex flex-column h-100 align-items-center justify-content-between text-center rounded-4 shadow-sm cart-item-card"
+                        onClick={() => router.push(`/products/${itemId}`)} // Redirect to dynamic product page on click
+                      >
+                        
+                        {/* Crisp Framework-Optimized Image Container */}
+                        <div className="position-relative d-flex align-items-center justify-content-center w-100" style={{ height: "160px" }}>
+                          <Image
+                            src={item.image || item.image_url}
+                            alt={item.name || "Product image"}
+                            width={140}
+                            height={140}
+                            className="object-fit-contain"
+                            unoptimized
+                          />
                         </div>
-                      </div>
 
+                        {/* Info & CTA Layout Block */}
+                        <div className="mt-3 w-100">
+                          <h5 className="fw-bold text-dark text-truncate mb-1" style={{ fontSize: "0.95rem" }}>
+                            {item.name}
+                          </h5>
+                          <p className="fw-extrabold text-success mb-3 fs-5">
+                            ₹{item.price}
+                          </p>
+
+                          <div className="d-flex flex-column gap-2">
+                            <button
+                              className="btn btn-outline-danger btn-modern btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
+                              onClick={(e) => {
+                                e.stopPropagation(); // 👈 Stops redirect execution when clicking remove
+                                removeFromCart(itemId); // 👈 Passes the correct valid item ID
+                              }}
+                            >
+                              <FaTrash size={12} /> <span>Remove</span>
+                            </button>
+
+                            <button
+                              className="btn btn-success btn-modern btn-sm w-100 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation(); // 👈 Stops outer element triggers
+                                router.push(`/checkout/${itemId}`);
+                              }}
+                            >
+                              Buy Now
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

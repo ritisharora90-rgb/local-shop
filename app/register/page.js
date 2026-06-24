@@ -4,175 +4,175 @@ import { useState } from 'react';
 
 export default function RegisterPage() {
 
-const [formData,setFormData]=useState({
-name:'',
-email:'',
-password:''
-});
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: ''
+    });
 
-const handleChange=(e)=>{
+    const handleChange = (e) => {
 
-setFormData({
-...formData,
-[e.target.name]:
-e.target.value
-});
+        setFormData({
+            ...formData,
+            [e.target.name]:
+                e.target.value
+        });
 
-};
+    };
 
-const handleSubmit=async(e)=>{
+    const handleSubmit = async (e) => {
 
-e.preventDefault();
+        e.preventDefault();
 
-try{
+        try {
 
-const res=
-await fetch(
-'/api/register',
-{
-method:'POST',
+            const res =
+                await fetch(
+                    '/api/register',
+                    {
+                        method: 'POST',
 
-headers:{
-'Content-Type':
-'application/json'
-},
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
 
-body:
-JSON.stringify(
-formData
-)
-}
-);
+                        body:
+                            JSON.stringify(
+                                formData
+                            )
+                    }
+                );
 
-const text=
-await res.text();
+            const text =
+                await res.text();
 
-console.log(text);
+            console.log(text);
 
-if(!text){
+            if (!text) {
 
-alert(
-'Server returned empty response'
-);
+                alert(
+                    'Server returned empty response'
+                );
 
-return;
+                return;
 
-}
+            }
 
-const data=
-JSON.parse(text);
+            const data =
+                JSON.parse(text);
 
-if(!res.ok){
+            if (!res.ok) {
 
-alert(
-data.message
-||
-'Registration failed'
-);
+                alert(
+                    data.message
+                    ||
+                    'Registration failed'
+                );
 
-return;
+                return;
 
-}
+            }
 
-alert(
-data.message
-||
-'Registered Successfully'
-);
+            alert(
+                data.message
+                ||
+                'Registered Successfully'
+            );
 
-setFormData({
-name:'',
-email:'',
-password:''
-});
+            setFormData({
+                name: '',
+                email: '',
+                password: ''
+            });
 
-}
+        }
 
-catch(error){
+        catch (error) {
 
-console.log(error);
+            console.log(error);
 
-alert(
-'Something went wrong'
-);
+            alert(
+                'Something went wrong'
+            );
 
-}
+        }
 
-};
+    };
 
-return(
+    return (
 
-<div
-className=
-"container mt-5"
->
+        <div
+            className=
+            "container mt-5"
+        >
 
-<h2>
-Create Account
-</h2>
+            <h2>
+                Create Account
+            </h2>
 
-<form
-onSubmit={
-handleSubmit
-}
->
+            <form
+                onSubmit={
+                    handleSubmit
+                }
+            >
 
-<input
-type="text"
-name="name"
-value={
-formData.name
-}
-placeholder="Name"
-className=
-"form-control mb-3"
-onChange={
-handleChange
-}
-/>
+                <input
+                    type="text"
+                    name="name"
+                    value={
+                        formData.name
+                    }
+                    placeholder="Name"
+                    className=
+                    "form-control mb-3"
+                    onChange={
+                        handleChange
+                    }
+                />
 
-<input
-type="email"
-name="email"
-value={
-formData.email
-}
-placeholder="Email"
-className=
-"form-control mb-3"
-onChange={
-handleChange
-}
-/>
+                <input
+                    type="email"
+                    name="email"
+                    value={
+                        formData.email
+                    }
+                    placeholder="Email"
+                    className=
+                    "form-control mb-3"
+                    onChange={
+                        handleChange
+                    }
+                />
 
-<input
-type="password"
-name="password"
-value={
-formData.password
-}
-placeholder="Password"
-className=
-"form-control mb-3"
-onChange={
-handleChange
-}
-/>
+                <input
+                    type="password"
+                    name="password"
+                    value={
+                        formData.password
+                    }
+                    placeholder="Password"
+                    className=
+                    "form-control mb-3"
+                    onChange={
+                        handleChange
+                    }
+                />
 
-<button
-className=
-"btn btn-primary"
+                <button
+                    className=
+                    "btn btn-primary"
 
->
+                >
 
-Register
+                    Register
 
-</button>
+                </button>
 
-</form>
+            </form>
 
-</div>
+        </div>
 
-);
+    );
 
 }
