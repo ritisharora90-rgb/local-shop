@@ -6,238 +6,241 @@ import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 
-const handler = NextAuth({
+export const authOptions = {
 
-secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
 
-debug: true,
+    debug: true,
 
-providers: [
+    providers: [
 
-GoogleProvider({
+        GoogleProvider({
 
-clientId:
-process.env.GOOGLE_CLIENT_ID,
+            clientId:
+                process.env.GOOGLE_CLIENT_ID,
 
-clientSecret:
-process.env.GOOGLE_CLIENT_SECRET,
+            clientSecret:
+                process.env.GOOGLE_CLIENT_SECRET,
 
-authorization:{
-params:{
-prompt:"select_account"
-}
-}
+            authorization: {
+                params: {
+                    prompt: "select_account"
+                }
+            }
 
-}),
+        }),
 
-CredentialsProvider({
+        CredentialsProvider({
 
-name:"Credentials",
+            name: "Credentials",
 
-credentials:{
+            credentials: {
 
-email:{
-label:"Email",
-type:"email"
-},
+                email: {
+                    label: "Email",
+                    type: "email"
+                },
 
-password:{
-label:"Password",
-type:"password"
-}
+                password: {
+                    label: "Password",
+                    type: "password"
+                }
 
-},
+            },
 
-async authorize(credentials){
+            async authorize(credentials) {
 
-await connectDB();
+                await connectDB();
 
-const user =
-await User.findOne({
-email:
-credentials.email
-});
+                const user =
+                    await User.findOne({
+                        email:
+                            credentials.email
+                    });
 
-if(!user){
+                if (!user) {
 
-throw new Error(
-"No user found"
-);
+                    throw new Error(
+                        "No user found"
+                    );
 
-}
+                }
 
-const valid =
-await bcrypt.compare(
-credentials.password,
-user.password
-);
+                const valid =
+                    await bcrypt.compare(
+                        credentials.password,
+                        user.password
+                    );
 
-if(!valid){
+                if (!valid) {
 
-throw new Error(
-"Incorrect password"
-);
+                    throw new Error(
+                        "Incorrect password"
+                    );
 
-}
+                }
 
-return {
+                return {
 
-id:
-user._id.toString(),
+                    id:
+                        user._id.toString(),
 
-name:
-user.name,
+                    name:
+                        user.name,
 
-email:
-user.email,
+                    email:
+                        user.email,
 
-role:
-user.role
+                    role:
+                        user.role
+
+                };
+
+            }
+
+        })
+
+    ],
+
+    callbacks: {
+
+        async signIn({
+
+            user,
+            account
+
+        }) {
+
+            try {
+
+                if (
+                    account?.provider === "google"
+                ) {
+
+                    await connectDB();
+
+                    const existing =
+                        await User.findOne({
+                            email:
+                                user.email
+                        });
+
+                    if (
+                        !existing
+                    ) {
+
+                        await User.create({
+
+                            name:
+                                user.name,
+
+                            email:
+                                user.email,
+
+                            image:
+                                user.image,
+
+                            provider:
+                                "google",
+
+                            role:
+                                "customer"
+
+                        });
+
+                    }
+
+                }
+
+                return true;
+
+            }
+
+            catch (error) {
+
+                console.log(error);
+
+                return false;
+
+            }
+
+        },
+
+        async jwt({
+
+            token,
+            user
+
+        }) {
+
+            if (user) {
+
+                token.role =
+                    user.role;
+
+            }
+
+            if (
+                token.email
+                &&
+                !token.role
+            ) {
+
+                await connectDB();
+
+                const dbUser =
+                    await User.findOne({
+                        email:
+                            token.email
+                    });
+
+                token.role =
+                    dbUser?.role
+                    ||
+                    "customer";
+
+            }
+
+            return token;
+
+        },
+
+        async session({
+
+            session,
+            token
+
+        }) {
+
+            session.user.role =
+                token.role;
+
+            return session;
+
+        }
+
+    },
+
+    pages: {
+
+        signIn:
+            "/login"
+
+    },
+
+    session: {
+
+        strategy:
+            "jwt"
+
+    }
 
 };
 
-}
-
-})
-
-],
-
-callbacks:{
-
-async signIn({
-
-user,
-account
-
-}){
-
-try{
-
-if(
-account?.provider==="google"
-){
-
-await connectDB();
-
-const existing =
-await User.findOne({
-email:
-user.email
-});
-
-if(
-!existing
-){
-
-await User.create({
-
-name:
-user.name,
-
-email:
-user.email,
-
-image:
-user.image,
-
-provider:
-"google",
-
-role:
-"customer"
-
-});
-
-}
-
-}
-
-return true;
-
-}
-
-catch(error){
-
-console.log(error);
-
-return false;
-
-}
-
-},
-
-async jwt({
-
-token,
-user
-
-}){
-
-if(user){
-
-token.role =
-user.role;
-
-}
-
-if(
-token.email
-&&
-!token.role
-){
-
-await connectDB();
-
-const dbUser =
-await User.findOne({
-email:
-token.email
-});
-
-token.role =
-dbUser?.role
-||
-"customer";
-
-}
-
-return token;
-
-},
-
-async session({
-
-session,
-token
-
-}){
-
-session.user.role =
-token.role;
-
-return session;
-
-}
-
-},
-
-pages:{
-
-signIn:
-"/login"
-
-},
-
-session:{
-
-strategy:
-"jwt"
-
-}
-
-});
+const handler =
+    NextAuth(authOptions);
 
 export {
-handler as GET,
-handler as POST
+    handler as GET,
+    handler as POST
 };
