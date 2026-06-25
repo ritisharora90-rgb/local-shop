@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
-import { useState } from "react"; // 👈 Added useState for the pop animation tracking
 
 const pulseProduct = [
   { id: "p1", name: "Premium Toor Dal", price: 50, image: "/pulses/pulse1.jpg", desc: "Unpolished, high-protein pigeon peas for your daily dal." },
@@ -17,14 +16,6 @@ const pulseProduct = [
 export default function Pulses() {
   const { addToCart } = useCart();
   const router = useRouter();
-  const [activeCard, setActiveCard] = useState(null); // 👈 Track pop animation state
-
-  const showPopup = (id) => {
-    setActiveCard(id);
-    setTimeout(() => {
-      setActiveCard(null);
-    }, 300);
-  };
 
   return (
     <section className="container-fluid px-3 px-md-4 py-5 bg-light overflow-hidden">
@@ -51,8 +42,6 @@ export default function Pulses() {
                     addToCart={addToCart} 
                     router={router} 
                     priority={true} 
-                    activeCard={activeCard}
-                    showPopup={showPopup}
                   />
                 </div>
               ))}
@@ -68,8 +57,6 @@ export default function Pulses() {
                     addToCart={addToCart} 
                     router={router} 
                     priority={false} 
-                    activeCard={activeCard}
-                    showPopup={showPopup}
                   />
                 </div>
               ))}
@@ -100,8 +87,6 @@ export default function Pulses() {
                   addToCart={addToCart} 
                   router={router} 
                   priority={index === 0} 
-                  activeCard={activeCard}
-                  showPopup={showPopup}
                 />
               </div>
             </div>
@@ -152,41 +137,15 @@ export default function Pulses() {
         .carousel-control-next-icon, .carousel-control-prev-icon {
           filter: none !important;
         }
-
-        /* 🚀 Added Pop Animation to keep consistent with Diary layout style */
-        .popup {
-          animation: pop 0.3s ease-in-out;
-        }
-
-        @keyframes pop {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.06); }
-          100% { transform: scale(1); }
-        }
       `}</style>
     </section>
   );
 }
 
-{/* Extracted Shared Sub-Component */ }
-function ProductCard({ product, addToCart, router, priority, activeCard, showPopup }) {
-  
-  // Custom execution flow matching Diary layout
-  const handleCardClick = () => {
-    showPopup(product.id);
-    
-    // Smooth delay allows pop animation to resolve cleanly before page pushes
-    setTimeout(() => {
-      router.push(`/products/${product.id}`);
-    }, 200);
-  };
-
+{/* Extracted Shared Sub-Component */}
+function ProductCard({ product, addToCart, router, priority }) {
   return (
-    <div 
-      className={`card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-lift ${activeCard === product.id ? "popup" : ""}`}
-      onClick={handleCardClick}
-      style={{ cursor: "pointer" }}
-    >
+    <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-lift">
       {/* Image Container Aspect Ratio Layout */}
       <div className="position-relative bg-light d-flex align-items-center justify-content-center p-4" style={{ height: "260px" }}>
         <div className="inner-img-wrapper">
@@ -223,8 +182,7 @@ function ProductCard({ product, addToCart, router, priority, activeCard, showPop
           <div className="d-flex gap-2">
             <button 
               className="btn btn-outline-success w-50" 
-              onClick={(e) => { 
-                e.stopPropagation(); // 👈 Stops redirect when clicking Add To Cart
+              onClick={() => { 
                 addToCart(product); 
                 alert(`Added ${product.name} to cart!`);
               }}
@@ -233,10 +191,7 @@ function ProductCard({ product, addToCart, router, priority, activeCard, showPop
             </button>
             <button 
               className="btn btn-success w-50" 
-              onClick={(e) => { 
-                e.stopPropagation(); // 👈 Stops redirect when clicking Buy
-                router.push(`/checkout/${product.id}`); 
-              }}
+              onClick={() => router.push(`/checkout/${product.id}`)}
             >
               Buy
             </button>

@@ -18,7 +18,7 @@ export default function ProductPage(props) {
     useEffect(() => {
         async function fetchProduct() {
             try {
-                const res = await fetch(`http://127.0.0.1:8000/api/products/${params.id}`);
+                const res = await fetch(  `https://local-shop-admin.onrender.com/api/products/${params.id}`);
                 if (res.ok) {
                     const data = await res.json();
                     setProduct(data);

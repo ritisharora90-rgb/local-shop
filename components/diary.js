@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 const diaryProducts = [
   { id: "d1", name: "Amul Milk Premium", price: 30, image: "/diary/diary1.jpg", desc: " Pure fresh milk, full of wholesome nutrition." },
@@ -17,14 +16,6 @@ const diaryProducts = [
 export default function DiaryPage() {
   const { addToCart } = useCart();
   const router = useRouter();
-  const [activeCard, setActiveCard] = useState(null);
-
-  const showPopup = (id) => {
-    setActiveCard(id);
-    setTimeout(() => {
-      setActiveCard(null);
-    }, 300);
-  };
 
   const desktopSlides = [
     diaryProducts.slice(0, 3),
@@ -42,7 +33,7 @@ export default function DiaryPage() {
         </span>
       </div>
 
-      {/* Desktop */}
+      {/* Desktop Carousel */}
       <div id="productDiaryDesktop" className="carousel slide d-none d-md-block py-4" data-bs-ride="carousel">
         <div className="carousel-inner px-5">
           {desktopSlides.map((group, index) => (
@@ -54,8 +45,6 @@ export default function DiaryPage() {
                       product={product}
                       router={router}
                       addToCart={addToCart}
-                      activeCard={activeCard}
-                      showPopup={showPopup}
                     />
                   </div>
                 ))}
@@ -71,7 +60,7 @@ export default function DiaryPage() {
         </button>
       </div>
 
-      {/* Mobile */}
+      {/* Mobile Carousel */}
       <div id="productDiaryMobile" className="carousel slide d-block d-md-none py-3" data-bs-ride="carousel">
         <div className="carousel-inner">
           {diaryProducts.map((product, index) => (
@@ -81,8 +70,6 @@ export default function DiaryPage() {
                   product={product}
                   router={router}
                   addToCart={addToCart}
-                  activeCard={activeCard}
-                  showPopup={showPopup}
                 />
               </div>
             </div>
@@ -118,38 +105,23 @@ export default function DiaryPage() {
         .custom-nav {
           width: 4%;
         }
-        .popup {
-          animation: pop 0.3s ease-in-out;
-        }
-        @keyframes pop {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.06); }
-          100% { transform: scale(1); }
-        }
       `}</style>
     </section>
   );
 }
 
-function ProductCard({ product, addToCart, router, activeCard, showPopup }) {
-  const handleCardClick = () => {
-    showPopup(product.id);
-    
-    // Delays redirection slightly to let the "pop" animation finish
-    setTimeout(() => {
-      router.push(`/products/${product.id}`);
-    }, 200);
-  };
-
+function ProductCard({ product, addToCart, router }) {
   return (
-    <div
-      className={`card diary-card h-100 ${activeCard === product.id ? "popup" : ""}`}
-      onClick={handleCardClick}
-      style={{ cursor: "pointer" }}
-    >
+    <div className="card diary-card h-100">
       <div className="bg-light d-flex justify-content-center align-items-center p-4" style={{ height: "240px" }}>
         <div className="card-img-wrapper">
-          <Image src={product.image} width={180} height={180} alt={product.name} priority={product.id === "d1"} />
+          <Image 
+            src={product.image} 
+            width={180} 
+            height={180} 
+            alt={product.name} 
+            priority={product.id === "d1"} 
+          />
         </div>
       </div>
 
@@ -166,21 +138,18 @@ function ProductCard({ product, addToCart, router, activeCard, showPopup }) {
           </div>
 
           <div className="d-flex gap-2">
-            <button
-              className="btn btn-outline-success w-50 fw-semibold"
-              onClick={(e) => {
-                e.stopPropagation(); // 👈 Stops the card redirect from firing
-                addToCart(product);
-              }}
-            >
+            <button 
+                        className="btn btn-outline-success w-50" 
+                        onClick={() => { 
+                          addToCart(product); 
+                          alert(`Added ${product.name} to cart!`);
+                        }}
+                      >
               Add to cart
             </button>
             <button
               className="btn btn-success w-50 fw-semibold"
-              onClick={(e) => {
-                e.stopPropagation(); // 👈 Stops the card redirect from firing
-                router.push(`/checkout/${product.id}`);
-              }}
+              onClick={() => router.push(`/checkout/${product.id}`)}
             >
               Buy Now
             </button>
