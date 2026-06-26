@@ -8,25 +8,25 @@ const COLLECTIONS = [
   {
     id: 1,
     title: "Amit Kiryana Store",
-    image: "/shops/c1.jpg",
+    image: "/shops/amitshop.jpg",
     desc: "Farm-fresh organic produce handpicked daily to ensure the highest quality and nutrition for your family.",
   },
   {
     id: 2,
     title: "Ritish Kiryana Store",
-    image: "/shops/c2.jpg",
+    image: "/shops/ritishshop.jpg",
     desc: "From farm-fresh milk and artisan cheeses to warm, fresh-baked bread for your morning routine.",
   },
   {
     id: 3,
     title: "Roop kishor Kiryana Store",
-    image: "/shops/c3.jpg",
+    image: "/shops/roopkishorshop.jpg",
     desc: "Stock up on premium grains, cooking oils, aromatic spices, and everyday ingredients.",
   },
   {
     id: 4,
     title: "Rocky kiryana store",
-    image: "/shops/c1.jpg",
+    image: "/shops/roopashop.jpg",
     desc: "A curated selection of refreshing drinks, healthy snacks, and delightful treats for any time of day.",
   },
 ];
