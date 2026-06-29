@@ -91,177 +91,177 @@ export default function Products() {
 
   return (
 
-<div
-style={{
-padding:"40px 20px",
-background:"#f9fafb",
-minHeight:"100vh"
-}}
->
+    <div
+      style={{
+        padding: "40px 20px",
+        background: "#fff",
+        minHeight: "100vh"
+      }}
+    >
 
-<div
-style={{
-maxWidth:"1200px",
-margin:"0 auto"
-}}
->
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto"
+        }}
+      >
 
-<h1
-style={{
-fontSize:"2rem",
-marginBottom:"30px"
-}}
->
+        <h1
+          style={{
+            fontSize: "2rem",
+            marginBottom: "30px"
+          }}
+        >
 
-{shopId
-? `${shopId} Shop`
-: "Fresh Grocery Items"}
+          {shopId
+            ? `${shopId} Shop`
+            : "Fresh Grocery Items"}
 
-</h1>
-
-
-<div
-style={{
-display:"grid",
-gridTemplateColumns:
-"repeat(auto-fill,minmax(260px,1fr))",
-gap:"24px"
-}}
->
-
-{products.length === 0 ? (
-
-<p>
-No products found
-</p>
-
-) : (
-
-products.map((item)=>{
-
-const itemId =
-item._id || item.id;
-
-return(
-
-<div
-key={itemId}
-
-style={{
-background:"#fff",
-border:"1px solid #ddd",
-borderRadius:"12px",
-padding:"16px",
-display:"flex",
-flexDirection:"column"
-}}
->
-
-<Link
-href={`/products/${itemId}`}
-style={{
-textDecoration:"none",
-color:"inherit"
-}}
->
-
-<div
-style={{
-height:"220px",
-overflow:"hidden"
-}}
->
-
-<img
-src={
-item.image ||
-item.image_url ||
-"https://placehold.co/200x200"
-}
-alt={
-item.name
-}
-style={{
-width:"100%",
-height:"100%",
-objectFit:"contain"
-}}
-/>
-
-</div>
-
-<h2>
-{item.name}
-</h2>
-
-<p>
-
-{
-item.price
-? `₹${item.price}`
-: "Fresh Stock"
-}
-
-</p>
-
-</Link>
+        </h1>
 
 
-<div
-style={{
-display:"flex",
-gap:"10px",
-marginTop:"auto"
-}}
->
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fill,minmax(260px,1fr))",
+            gap: "24px"
+          }}
+        >
 
-<button
-onClick={()=>{
-addToCart(item);
-}}
-style={{
-flex:1,
-padding:"10px"
-}}
->
+          {products.length === 0 ? (
 
-Add to cart
+            <p>
+              No products found
+            </p>
 
-</button>
+          ) : (
+
+            products.map((item) => {
+
+              const itemId =
+                item._id || item.id;
+
+              return (
+
+                <div
+                  key={itemId}
+
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #ddd",
+                    borderRadius: "12px",
+                    padding: "16px",
+                    display: "flex",
+                    flexDirection: "column"
+                  }}
+                >
+
+                  <Link
+                    href={`/products/${itemId}`}
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit"
+                    }}
+                  >
+
+                    <div
+                      style={{
+                        height: "220px",
+                        overflow: "hidden"
+                      }}
+                    >
+
+                      <img
+                        src={
+                          item.image ||
+                          item.image_url ||
+                          "https://placehold.co/200x200"
+                        }
+                        alt={
+                          item.name
+                        }
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain"
+                        }}
+                      />
+
+                    </div>
+
+                    <h2>
+                      {item.name}
+                    </h2>
+
+                    <p>
+
+                      {
+                        item.price
+                          ? `₹${item.price}`
+                          : "Fresh Stock"
+                      }
+
+                    </p>
+
+                  </Link>
 
 
-<button
-onClick={()=>
-router.push(
-`/checkout/${itemId}?qty=1`
-)
-}
-style={{
-flex:1,
-padding:"10px"
-}}
->
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      marginTop: "auto"
+                    }}
+                  >
 
-Buy now
+                    <button
+                      onClick={() => {
+                        addToCart(item);
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: "10px"
+                      }}
+                    >
 
-</button>
+                      Add to cart
 
-</div>
+                    </button>
 
-</div>
 
-);
+                    <button
+                      onClick={() =>
+                        router.push(
+                          `/checkout/${itemId}?qty=1`
+                        )
+                      }
+                      style={{
+                        flex: 1,
+                        padding: "10px"
+                      }}
+                    >
 
-})
+                      Buy now
 
-)}
+                    </button>
 
-</div>
+                  </div>
 
-</div>
+                </div>
 
-</div>
+              );
 
-);
+            })
+
+          )}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  );
 
 }
