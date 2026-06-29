@@ -1,203 +1,164 @@
-"use client";
+'use client';
 
-import { use, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 
-export default function ProductPage(props) {
+export default function Products() {
 
-    const params = use(props.params);
-    const router = useRouter();
-    const { addToCart } = useCart();
+const [products,setProducts]=
+useState([]);
 
-    const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
+const [loading,setLoading]=
+useState(true);
 
-    useEffect(() => {
+const router=
+useRouter();
 
-        async function fetchProduct() {
+const {addToCart}=
+useCart();
 
-            try {
+useEffect(()=>{
 
-                const res =
-                    await fetch(
-                        `https://local-shop-admin.onrender.com/api/products/${params.id}`
-                    );
+async function fetchItems(){
 
-                if (!res.ok) {
-                    throw new Error(
-                        "Failed to fetch"
-                    );
-                }
+try{
 
-                const data =
-                    await res.json();
+const params =
+new URLSearchParams(
+window.location.search
+);
 
-                // Convert Laravel storage path to full URL
-                if (
-                    data.image &&
-                    !data.image.startsWith("http")
-                ) {
-                    data.image =
-                        `https://local-shop-admin.onrender.com/storage/${data.image}`;
-                }
+const shopId =
+params.get(
+"shop_id"
+);
 
-                console.log(data);
+const url =
+shopId
+?
+`https://local-shop-admin.onrender.com/api/products?shop_id=${shopId}`
+:
+`https://local-shop-admin.onrender.com/api/products`;
 
-                setProduct(data);
+const res =
+await fetch(url);
 
-            } catch (err) {
+const data =
+await res.json();
 
-                console.log(
-                    "Error:",
-                    err
-                );
+setProducts(data);
 
-            } finally {
+}catch(err){
 
-                setLoading(false);
+console.log(err);
 
-            }
+}finally{
 
-        }
+setLoading(false);
 
-        fetchProduct();
+}
 
-    }, [params.id]);
+}
 
+fetchItems();
 
+},[]);
 
-    if (loading) {
-        return (
-            <div className="container py-5 text-center">
-                Loading...
-            </div>
-        );
-    }
 
 
+if(loading){
 
-    if (!product) {
-        return (
-            <div className="container py-5 text-center">
+return(
+<p>
+Loading...
+</p>
+);
 
-                <h3>
-                    Product Not Found
-                </h3>
+}
 
-                <Link href="/">
-                    Back
-                </Link>
 
-            </div>
-        );
-    }
+return(
 
+<div>
 
+<h1>
+Fresh Grocery Items
+</h1>
 
-    const productId =
-        product._id ||
-        product.id;
+<div>
 
+{products.map((item)=>{
 
+const itemId =
+item._id ||
+item.id;
 
-    return (
+return(
 
-        <section className="py-5 bg-light min-vh-100">
+<div
+key={itemId}
+>
 
-            <div className="container bg-white rounded-4 shadow p-5">
+<Link
+href={`/products/${itemId}`}
+>
 
-                <Link
-                    href="/"
-                    className="text-success text-decoration-none"
-                >
-                    ← Back
-                </Link>
+<img
+src={
+item.image
+||
+item.image_url
+}
+alt={
+item.name
+}
+width={200}
+/>
 
+<h2>
+{item.name}
+</h2>
 
-                <div className="row mt-4">
+<p>
+₹{item.price}
+</p>
 
-                    {/* IMAGE */}
+</Link>
 
-                    <div className="col-md-6">
+<button
+onClick={()=>
+addToCart(item)
+}
+>
 
-                        <img
-                            src={product.image}
-                            alt={product.name}
-                            className="img-fluid rounded"
-                            style={{
-                                maxHeight: "400px",
-                                width: "100%",
-                                objectFit: "contain"
-                            }}
-                        />
+Add to cart
 
-                    </div>
+</button>
 
+<button
+onClick={()=>
+router.push(
+`/checkout/${itemId}?qty=1`
+)
+}
+>
 
+Buy now
 
-                    {/* DETAILS */}
+</button>
 
-                    <div className="col-md-6">
+</div>
 
-                        <h1>
-                            {product.name}
-                        </h1>
+);
 
-                        <h2>
-                            ₹{product.price}
-                        </h2>
+})}
 
-                        <p>
-                            {
-                                product.description
-                                ||
-                                "No description"
-                            }
-                        </p>
+</div>
 
+</div>
 
-                        <div className="d-flex gap-3">
+);
 
-                            <button
-                                className="btn btn-outline-success"
-                                onClick={() => {
-
-                                    addToCart(
-                                        product
-                                    );
-
-                                    alert(
-                                        `${product.name} added`
-                                    );
-
-                                }}
-                            >
-                                Add To Cart
-                            </button>
-
-
-                            <button
-                                className="btn btn-success"
-                                onClick={() =>
-                                    router.push(
-                                        `/checkout/${productId}`
-                                    )
-                                }
-                            >
-                                Buy Now
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    );
 }
