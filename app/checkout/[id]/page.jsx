@@ -30,7 +30,7 @@ const localFallbackProducts = [
 export default function Checkout() {
   const { id } = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
+ 
   const shopId = searchParams.get('shop_id');
   
   // Dynamically pull chosen quantity if passed down the route query strings (?qty=2)
