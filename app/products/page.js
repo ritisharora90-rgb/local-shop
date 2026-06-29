@@ -2,365 +2,140 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 
+// ❌ REMOVED THE INTERFACE BLOCK FROM HERE
+
 export default function Products() {
-const [products, setProducts] = useState([]);
-const [loading, setLoading] = useState(true);
-const [shopId, setShopId] = useState();
+  // Configured state to default to an empty array without Type annotations
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const { addToCart } = useCart();
-const router = useRouter("");
+  const { addToCart } = useCart();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const shopId = searchParams.get("shop_id");
 
-useEffect(() => {
-const params =
-new URLSearchParams(
-window.location.search
-);
+  useEffect(() => {
+    async function fetchItems() {
+      try {
+        setLoading(true);
 
-   
-const id =
-  params.get(
-    "shop_id"
-  );
+        const url = shopId
+          ? `https://local-shop-admin.onrender.com/api/products?shop_id=${shopId}`
+          : `https://local-shop-admin.onrender.com/api/products`;
 
-setShopId(id);
+        const res = await fetch(url);
 
-async function fetchItems() {
-  try {
-    setLoading(true);
+        if (!res.ok) {
+          throw new Error("Failed to fetch products");
+        }
 
-    const url = id
-      ? `https://local-shop-admin.onrender.com/api/products?shop_id=${id}`
-      : `https://local-shop-admin.onrender.com/api/products`;
-
-    const res =
-      await fetch(url);
-
-    if (!res.ok) {
-      throw new Error(
-        "Failed to fetch products"
-      );
+        const data = await res.json();
+        setProducts(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Failed fetching products:", err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    const data =
-      await res.json();
+    fetchItems();
+  }, [shopId]);
 
-    setProducts(
-      Array.isArray(data)
-        ? data
-        : []
-    );
-
-  } catch (err) {
-
-    console.error(
-      "Failed fetching products:",
-      err
-    );
-
-    setProducts([]);
-
-  } finally {
-
-    setLoading(false);
-
-  }
-}
-
-fetchItems();
-   
-
-}, []);
-
-if (loading) {
-return (
-<div
-style={{
-display: "flex",
-justifyContent: "center",
-alignItems: "center",
-height: "100vh",
-fontFamily: "sans-serif",
-color: "#4b5563",
-}}
->
-<div
-style={{
-textAlign: "center",
-}}
->
-<div
-style={{
-width: "40px",
-height: "40px",
-border:
-"4px solid #f3f3f3",
-borderTop:
-"4px solid #10b981",
-borderRadius:
-"50%",
-animation:
-"spin 1s linear infinite",
-margin:
-"0 auto 16px",
-}}
-/>
-
-   
-      <p
-        style={{
-          fontSize:
-            "18px",
-          fontWeight:
-            "500",
-        }}
-      >
-        Loading Fresh Groceries...
-      </p>
-
-      <style>
-        {`
-          @keyframes spin {
-            0% {
-              transform:
-              rotate(0deg);
-            }
-
-            100% {
-              transform:
-              rotate(360deg);
-            }
-          }
-        `}
-      </style>
-    </div>
-  </div>
-);
-   
-
-}
-
-return (
-<div
-style={{
-padding:
-"40px 20px",
-background:
-"#f9fafb",
-minHeight:
-"100vh",
-fontFamily:
-"system-ui,sans-serif",
-}}
->
-<div
-style={{
-maxWidth:
-"1200px",
-margin:
-"0 auto",
-}}
->
-<div
-style={{
-marginBottom:
-"32px",
-borderBottom:
-"1px solid #e5e7eb",
-paddingBottom:
-"16px",
-}}
->
-<h1
-style={{
-fontSize:
-"32px",
-fontWeight:
-"700",
-}}
->
-{shopId
-? `${shopId} Shop`
-: "Fresh Grocery Items"} </h1>
-
-   
-      <p
-        style={{
-          color:
-            "#6b7280",
-        }}
-      >
-        Handpicked,
-        fresh,
-        and delivered.
-      </p>
-    </div>
-
-    {products.length === 0 ? (
-
-      <div
-        style={{
-          textAlign:
-            "center",
-          padding:
-            "60px 20px",
-        }}
-      >
-        No products found
+  if (loading) {
+    return (
+      <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-light">
+        <div className="spinner-border text-success mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <p className="text-secondary fw-semibold fs-5">Loading Fresh Groceries...</p>
       </div>
+    );
+  }
 
-    ) : (
+  return (
+    <div className="min-vh-100 bg-light py-5">
+      <div className="container">
+        
+        <div className="border-b pb-3 mb-5">
+          <h1 className="display-5 fw-bold text-dark text-capitalize">
+            {shopId ? `${shopId} Shop` : "Fresh Grocery Items"}
+          </h1>
+          <p className="text-muted fs-5">
+            Handpicked, organic, fresh, and delivered right to your doorstep.
+          </p>
+        </div>
 
-      <div
-        style={{
-          display:
-            "grid",
+        {products.length === 0 ? (
+          <div className="text-center py-5 bg-white rounded-4 border border-secondary border-dashed my-5">
+            <h3 className="mt-3 fw-semibold text-dark">No products found</h3>
+            <p className="text-muted">We could not find any items matching this shop setup.</p>
+          </div>
+        ) : (
+          
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {products.map((item) => {
+              const itemId = item._id || item.id;
+              const displayName = item.name || "Unnamed Product";
+              const displayImage = item.image || item.image_url || "https://placehold.co/300x300?text=No+Image";
+              const displayPrice = item.price ?? "N/A";
 
-          gridTemplateColumns:
-            "repeat(auto-fill,minmax(280px,1fr))",
+              return (
+                <div key={itemId} className="col">
+                  <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                    
+                    <Link href={`/products/${itemId}`} className="bg-light d-flex align-items-center justify-content-center p-4" style={{ height: "220px" }}>
+                      <img
+                        src={displayImage}
+                        alt={displayName}
+                        className="img-fluid h-100 object-fit-contain transition-transform"
+                        loading="lazy"
+                        style={{ maxHeight: "100%", maxWidth: "100%" }}
+                      />
+                    </Link>
 
-          gap:
-            "24px",
-        }}
-      >
-        {products.map(
-          (item) => {
+                    <div className="card-body d-flex flex-column justify-content-between p-4">
+                      <div className="mb-3">
+                        <Link href={`/products/${itemId}`} className="text-decoration-none">
+                          <h5 className="card-title text-dark fw-bold text-truncate mb-1">
+                            {displayName}
+                          </h5>
+                        </Link>
+                        <p className="card-text fs-4 fw-extrabold text-success mb-0">
+                          ₹{displayPrice}
+                        </p>
+                      </div>
 
-            const itemId =
-              item._id ||
-              item.id;
+                      <div className="d-flex gap-2">
+                        <button
+                          onClick={() => {
+                            addToCart(item);
+                            alert(`Added ${displayName} to cart!`);
+                          }}
+                          className="btn btn-outline-success w-50 py-2 rounded-3 fw-semibold"
+                        >
+                          Add to cart
+                        </button>
+                        <button
+                          onClick={() => router.push(`/checkout/${itemId}`)}
+                          className="btn btn-success w-50 py-2 rounded-3 fw-semibold"
+                        >
+                          Buy Now
+                        </button>
+                      </div>
+                    </div>
 
-            return (
-
-              <div
-                key={itemId}
-                style={{
-                  background:
-                    "#fff",
-
-                  borderRadius:
-                    "16px",
-
-                  overflow:
-                    "hidden",
-
-                  border:
-                    "1px solid #eee",
-                }}
-              >
-                <Link
-                  href={
-                    `/products/${itemId}`
-                  }
-
-                  style={{
-                    textDecoration:
-                      "none",
-
-                    color:
-                      "inherit",
-                  }}
-                >
-                  <div
-                    style={{
-                      height:
-                        "200px",
-
-                      display:
-                        "flex",
-
-                      justifyContent:
-                        "center",
-
-                      alignItems:
-                        "center",
-                    }}
-                  >
-                    <img
-                      src={
-                        item.image ||
-                        item.image_url ||
-                        "https://placehold.co/200"
-                      }
-
-                      alt={
-                        item.name ||
-                        "product"
-                      }
-
-                      style={{
-                        maxWidth:
-                          "100%",
-
-                        maxHeight:
-                          "100%",
-                      }}
-                    />
                   </div>
-
-                  <div
-                    style={{
-                      padding:
-                        "20px",
-                    }}
-                  >
-                    <h2>
-                      {item.name}
-                    </h2>
-
-                    <p>
-                      ₹
-                      {item.price}
-                    </p>
-                  </div>
-                </Link>
-
-                <div
-                  style={{
-                    display:
-                      "flex",
-
-                    gap:
-                      "10px",
-
-                    padding:
-                      "20px",
-                  }}
-                >
-                  <button
-                    onClick={() =>
-                      addToCart(
-                        item
-                      )
-                    }
-                  >
-                    Add to cart
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      router.push(
-                        `/checkout/${itemId}?qty=1`
-                      )
-                    }
-                  >
-                    Buy Now
-                  </button>
                 </div>
-              </div>
-
-            );
-
-          }
+              );
+            })}
+          </div>
         )}
       </div>
-
-    )}
-  </div>
-</div>
- 
-
-);
-}
+    </div>
+  );
+} 

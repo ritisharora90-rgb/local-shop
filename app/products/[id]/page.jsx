@@ -80,13 +80,22 @@ export default function Products() {
                   <p>₹{item.price}</p>
                 </Link>
 
-                <button onClick={() => addToCart(item)}>Add to cart</button>
-
-                <button
-                  onClick={() => router.push(`/checkout/${itemId}?qty=1`)}
-                >
-                  Buy now
-                </button>
+               
+                      <button 
+                        className="btn btn-outline-success w-50" 
+                        onClick={() => { 
+                          addToCart(product); 
+                          alert(`Added ${product.name} to cart!`);
+                        }}
+                      >
+                        Add to carts
+                      </button>
+                      <button 
+                        className="btn btn-success w-50" 
+                        onClick={() => router.push(`/checkout/${product.id}`)}
+                      >
+                        Buy
+                      </button>
               </div>
             );
           })

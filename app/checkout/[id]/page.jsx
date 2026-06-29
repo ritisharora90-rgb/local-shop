@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter,useSearchParams} from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaShieldAlt, FaShoppingBag, FaTruck } from "react-icons/fa";
@@ -28,13 +28,27 @@ const localFallbackProducts = [
 ];
 
 export default function Checkout() {
-  const { id } = useParams();
-  const router = useRouter();
- 
-  const shopId = searchParams.get('shop_id');
-  
-  // Dynamically pull chosen quantity if passed down the route query strings (?qty=2)
-  const quantity = Number(searchParams.get("qty")) || 1;
+
+  const { id } =
+    useParams();
+
+  const router =
+    useRouter();
+
+  const searchParams =
+    useSearchParams();
+
+  const shopId =
+    searchParams.get(
+      "shop_id"
+    );
+
+  const quantity =
+    Number(
+      searchParams.get(
+        "qty"
+      )
+    ) || 1;
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
