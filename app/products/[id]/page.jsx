@@ -13,10 +13,12 @@ useState([]);
 const [loading,setLoading]=
 useState(true);
 
-const router=
+const router =
 useRouter();
 
-const {addToCart}=
+const {
+addToCart
+} =
 useCart();
 
 useEffect(()=>{
@@ -25,15 +27,17 @@ async function fetchItems(){
 
 try{
 
-const params =
+const shopId =
+typeof window !==
+"undefined"
+?
 new URLSearchParams(
 window.location.search
-);
-
-const shopId =
-params.get(
+).get(
 "shop_id"
-);
+)
+:
+null;
 
 const url =
 shopId
@@ -43,20 +47,48 @@ shopId
 `https://local-shop-admin.onrender.com/api/products`;
 
 const res =
-await fetch(url);
+await fetch(
+url,
+{
+cache:
+"no-store"
+}
+);
+
+if(
+!res.ok
+){
+
+throw new Error(
+"Fetch failed"
+);
+
+}
 
 const data =
 await res.json();
 
-setProducts(data);
+setProducts(
+Array.isArray(data)
+?
+data
+:
+[]
+);
 
 }catch(err){
 
-console.log(err);
+console.error(
+err
+);
+
+setProducts([]);
 
 }finally{
 
-setLoading(false);
+setLoading(
+false
+);
 
 }
 
@@ -66,43 +98,72 @@ fetchItems();
 
 },[]);
 
-
-
 if(loading){
 
 return(
+
 <p>
-Loading...
+
+Loading Fresh Groceries...
+
 </p>
+
 );
 
 }
-
 
 return(
 
 <div>
 
 <h1>
+
 Fresh Grocery Items
+
 </h1>
 
 <div>
 
-{products.map((item)=>{
+{
+
+products.length===0
+
+?
+
+(
+
+<p>
+
+No products found
+
+</p>
+
+)
+
+:
+
+(
+
+products.map(
+(item)=>{
 
 const itemId =
-item._id ||
+item._id
+||
 item.id;
 
 return(
 
 <div
-key={itemId}
+key={
+itemId
+}
 >
 
 <Link
-href={`/products/${itemId}`}
+href={
+`/products/${itemId}`
+}
 >
 
 <img
@@ -110,27 +171,42 @@ src={
 item.image
 ||
 item.image_url
+||
+"https://placehold.co/200"
 }
 alt={
 item.name
 }
-width={200}
+width={
+200
+}
 />
 
 <h2>
-{item.name}
+
+{
+item.name
+}
+
 </h2>
 
 <p>
-₹{item.price}
+
+₹{
+item.price
+}
+
 </p>
 
 </Link>
 
 <button
 onClick={()=>
-addToCart(item)
+addToCart(
+item
+)
 }
+
 >
 
 Add to cart
@@ -143,6 +219,7 @@ router.push(
 `/checkout/${itemId}?qty=1`
 )
 }
+
 >
 
 Buy now
@@ -153,7 +230,13 @@ Buy now
 
 );
 
-})}
+}
+
+)
+
+)
+
+}
 
 </div>
 

@@ -2,265 +2,255 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  useRouter,
-  
-} from "next/navigation";
-
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 
 export default function Products() {
 
-  const [products, setProducts] =
-    useState([]);
+const [products,setProducts]=
+useState([]);
 
-  const [loading, setLoading] =
-    useState(true);
+const [loading,setLoading]=
+useState(true);
 
-  const { addToCart } =
-    useCart();
+const [shopId,setShopId]=
+useState(null);
 
-  const router =
-    useRouter();
+const {addToCart}=
+useCart();
 
+const router=
+useRouter();
 
+useEffect(()=>{
 
-  const shopId =
-    searchParams.get("shop_id");
+async function fetchItems(){
 
-  useEffect(() => {
+try{
 
-    async function fetchItems() {
+setLoading(true);
 
-      try {
+const currentShopId =
+typeof window !==
+"undefined"
+?
+new URLSearchParams(
+window.location.search
+).get(
+"shop_id"
+)
+:
+null;
 
-        setLoading(true);
+setShopId(
+currentShopId
+);
 
-        const url =
-          shopId
-            ? `https://local-shop-admin.onrender.com/api/products?shop_id=${shopId}`
-            : `https://local-shop-admin.onrender.com/api/products`;
+const url =
+currentShopId
+?
+`https://local-shop-admin.onrender.com/api/products?shop_id=${currentShopId}`
+:
+`https://local-shop-admin.onrender.com/api/products`;
 
-        const res =
-          await fetch(url);
+const res =
+await fetch(
+url
+);
 
-        const data =
-          await res.json();
+const data =
+await res.json();
 
-        setProducts(
-          Array.isArray(data)
-            ? data
-            : []
-        );
+setProducts(
+Array.isArray(data)
+?
+data
+:
+[]
+);
 
-      } catch (err) {
+}catch(err){
 
-        console.error(
-          "Failed to fetch products",
-          err
-        );
+console.error(
+err
+);
 
-        setProducts([]);
+setProducts([]);
 
-      } finally {
+}finally{
 
-        setLoading(false);
+setLoading(false);
 
-      }
+}
 
-    }
+}
 
-    fetchItems();
+fetchItems();
 
-  }, [shopId]);
+},[]);
 
+if(loading){
 
+return(
 
-  if (loading) {
-    return (
-      <p
-        style={{
-          padding: "40px"
-        }}
-      >
-        Loading Fresh Groceries...
-      </p>
-    );
-  }
+<p
+style={{
+padding:"40px"
+}}
+>
 
-  return (
+Loading Fresh Groceries...
 
-    <div
-      style={{
-        padding: "40px 20px",
-        background: "#fff",
-        minHeight: "100vh"
-      }}
-    >
+</p>
 
-      <div
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto"
-        }}
-      >
+);
 
-        <h1
-          style={{
-            fontSize: "2rem",
-            marginBottom: "30px"
-          }}
-        >
+}
 
-          {shopId
-            ? `${shopId} Shop`
-            : "Fresh Grocery Items"}
-
-        </h1>
-
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fill,minmax(260px,1fr))",
-            gap: "24px"
-          }}
-        >
-
-          {products.length === 0 ? (
-
-            <p>
-              No products found
-            </p>
-
-          ) : (
-
-            products.map((item) => {
-
-              const itemId =
-                item._id || item.id;
-
-              return (
-
-                <div
-                  key={itemId}
-
-                  style={{
-                    background: "#fff",
-                    border: "1px solid #ddd",
-                    borderRadius: "12px",
-                    padding: "16px",
-                    display: "flex",
-                    flexDirection: "column"
-                  }}
-                >
+return(
+
+<div
+style={{
+padding:"40px 20px",
+background:"#fff",
+minHeight:"100vh"
+}}
+>
+
+<div
+style={{
+maxWidth:"1200px",
+margin:"0 auto"
+}}
+>
+
+<h1>
+
+{
+shopId
+?
+`${shopId} Shop`
+:
+"Fresh Grocery Items"
+}
+
+</h1>
 
-                  <Link
-                    href={`/products/${itemId}`}
-                    style={{
-                      textDecoration: "none",
-                      color: "inherit"
-                    }}
-                  >
+<div
+style={{
+display:"grid",
+gridTemplateColumns:
+"repeat(auto-fill,minmax(260px,1fr))",
+gap:"24px"
+}}
+>
 
-                    <div
-                      style={{
-                        height: "220px",
-                        overflow: "hidden"
-                      }}
-                    >
+{
+products.length===0
 
-                      <img
-                        src={
-                          item.image ||
-                          item.image_url ||
-                          "https://placehold.co/200x200"
-                        }
-                        alt={
-                          item.name
-                        }
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "contain"
-                        }}
-                      />
+?
 
-                    </div>
+<p>
+No products found
+</p>
 
-                    <h2>
-                      {item.name}
-                    </h2>
+:
 
-                    <p>
+products.map(
+(item)=>{
 
-                      {
-                        item.price
-                          ? `₹${item.price}`
-                          : "Fresh Stock"
-                      }
+const itemId=
+item._id||
+item.id;
 
-                    </p>
+return(
 
-                  </Link>
+<div
+key={
+itemId
+}
+>
 
+<Link
+href={`/products/${itemId}`}
+>
 
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "10px",
-                      marginTop: "auto"
-                    }}
-                  >
+<img
+src={
+item.image||
+item.image_url||
+"https://placehold.co/200x200"
+}
+alt={
+item.name
+}
+style={{
+width:"100%",
+height:"220px",
+objectFit:"contain"
+}}
+/>
 
-                    <button
-                      onClick={() => {
-                        addToCart(item);
-                      }}
-                      style={{
-                        flex: 1,
-                        padding: "10px"
-                      }}
-                    >
+<h2>
 
-                      Add to cart
+{
+item.name
+}
 
-                    </button>
+</h2>
 
+<p>
 
-                    <button
-                      onClick={() =>
-                        router.push(
-                          `/checkout/${itemId}?qty=1`
-                        )
-                      }
-                      style={{
-                        flex: 1,
-                        padding: "10px"
-                      }}
-                    >
+₹{
+item.price
+}
 
-                      Buy now
+</p>
 
-                    </button>
+</Link>
 
-                  </div>
+<button
+onClick={()=>
+addToCart(
+item
+)
+}
 
-                </div>
+>
 
-              );
+Add to cart
 
-            })
+</button>
 
-          )}
+<button
+onClick={()=>
+router.push(
+`/checkout/${itemId}?qty=1`
+)
+}
 
-        </div>
+>
 
-      </div>
+Buy now
 
-    </div>
+</button>
 
-  );
+</div>
+
+);
+
+}
+
+)
+
+}
+
+</div>
+
+</div>
+
+</div>
+
+);
 
 }
