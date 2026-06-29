@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   useRouter,
-  useSearchParams
+  
 } from "next/navigation";
 
 import { useCart } from "@/context/CartContext";
@@ -23,8 +23,7 @@ export default function Products() {
   const router =
     useRouter();
 
-  const searchParams =
-    useSearchParams();
+
 
   const shopId =
     searchParams.get("shop_id");
