@@ -9,25 +9,29 @@ const COLLECTIONS = [
     id: 1,
     title: "Amit Kiryana Store",
     image: "/shops/amitshop.jpg",
-    desc: "Farm-fresh organic produce handpicked daily to ensure the highest quality and nutrition for your family.",
+    shop_id: "shop_amit",    // ← must match admin's shop_id in DB
+    desc: "Farm-fresh organic produce handpicked daily...",
   },
   {
     id: 2,
     title: "Ritish Kiryana Store",
     image: "/shops/ritishshop.jpg",
-    desc: "From farm-fresh milk and artisan cheeses to warm, fresh-baked bread for your morning routine.",
+    shop_id: "shop_ritish",
+    desc: "From farm-fresh milk and artisan cheeses...",
   },
   {
     id: 3,
-    title: "Roop kishor Kiryana Store",
+    title: "Roop Kishor Kiryana Store",
     image: "/shops/roopkishorshop.jpg",
-    desc: "Stock up on premium grains, cooking oils, aromatic spices, and everyday ingredients.",
+    shop_id: "shop_roopkishor",
+    desc: "Stock up on premium grains, cooking oils...",
   },
   {
     id: 4,
-    title: "Rocky kiryana store",
+    title: "Rocky Kiryana Store",
     image: "/shops/roopashop.jpg",
-    desc: "A curated selection of refreshing drinks, healthy snacks, and delightful treats for any time of day.",
+    shop_id: "shop_rocky",
+    desc: "A curated selection of refreshing drinks...",
   },
 ];
 
@@ -153,7 +157,7 @@ export default function Collections() {
                       {item.desc}
                     </p>
                     <Link 
-                      href="/products" 
+                       href={`/products?shop_id=${item.shop_id}`}
                       className="btn btn-outline-success btn-sm rounded-pill px-4 fw-medium d-inline-flex align-items-center gap-2"
                     >
                       <span>Explore Collection</span>

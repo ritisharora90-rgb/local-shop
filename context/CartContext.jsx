@@ -17,7 +17,7 @@ export function CartProvider({ children }) {
   });
 
   const [cart, setCart] = useState([]);
-  
+
   // CRITICAL FIX: Tracks if the database items have loaded on refresh
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -27,9 +27,11 @@ export function CartProvider({ children }) {
 
     async function getCart() {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/cart/${guestId}`);
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+        const res = await fetch(`${API_URL}/api/cart/${guestId}`);
         const data = await res.json();
-        
+
         // Ensure we parse the data safely if the backend accidentally sends text
         let itemsArray = data.items || [];
         if (typeof itemsArray === "string") {
@@ -82,7 +84,7 @@ export function CartProvider({ children }) {
         return prev.map((item) =>
           (item._id || item.id) === productId
             ? { ...item, quantity: (item.quantity || 1) + 1 }
-            : item
+            : item,
         );
       }
 

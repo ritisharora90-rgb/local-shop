@@ -31,6 +31,7 @@ export default function Checkout() {
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const shopId = searchParams.get('shop_id');
   
   // Dynamically pull chosen quantity if passed down the route query strings (?qty=2)
   const quantity = Number(searchParams.get("qty")) || 1;
@@ -43,7 +44,7 @@ export default function Checkout() {
     async function load() {
       try {
         // First look into your live central product list
-        const res = await fetch("https://local-shop-admin.onrender.com/api/products");
+        const res = await fetch(`https://local-shop-admin.onrender.com/api/products${shopId ? `?shop_id=${shopId}` : ''}`);
         if (res.ok) {
           const data = await res.json();
           const selected = data.find((p) => (p._id === id || p.id === id));
