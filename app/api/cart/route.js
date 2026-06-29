@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { connectDB } from "@/lib/mongodb"; // Adjust this path to match where your database connection utility lives
 import Cart from '@/models/Cart';        // Adjust this path to match your Cart model file location
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route'; // Adjust this path to match your NextAuth route configuration
+import { authOptions } from "@/lib/auth";
+ // Adjust this path to match your NextAuth route configuration
 
 // ==========================================
 // 1. GET: Fetch the cart items when a user refreshes the page
