@@ -7,7 +7,6 @@ import { useCart } from "@/context/CartContext";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
@@ -19,7 +18,9 @@ export default function Products() {
       try {
         const shopId =
           typeof window !== "undefined"
-            ? new URLSearchParams(window.location.search).get("shop_id")
+            ? new URLSearchParams(
+                window.location.search
+              ).get("shop_id")
             : null;
 
         const url = shopId
@@ -36,7 +37,11 @@ export default function Products() {
 
         const data = await res.json();
 
-        setProducts(Array.isArray(data) ? data : []);
+        setProducts(
+          Array.isArray(data)
+            ? data
+            : []
+        );
       } catch (err) {
         console.error(err);
 
@@ -50,52 +55,79 @@ export default function Products() {
   }, []);
 
   if (loading) {
-    return <p>Loading Fresh Groceries...</p>;
+    return (
+      <p>
+        Loading Fresh
+        Groceries...
+      </p>
+    );
   }
 
   return (
     <div>
-      <h1>Fresh Grocery Items</h1>
+      <h1>
+        Fresh Grocery Items
+      </h1>
 
       <div>
         {products.length === 0 ? (
-          <p>No products found</p>
+          <p>
+            No products found
+          </p>
         ) : (
           products.map((item) => {
-            const itemId = item._id || item.id;
+            const itemId =
+              item._id || item.id;
 
             return (
               <div key={itemId}>
-                <Link href={`/products/${itemId}`}>
+                <Link
+                  href={`/products/${itemId}`}
+                >
                   <img
                     src={
-                      item.image || item.image_url || "https://placehold.co/200"
+                      item.image ||
+                      item.image_url ||
+                      "https://placehold.co/200"
                     }
-                    alt={item.name}
+                    alt={
+                      item.name
+                    }
                     width={200}
                   />
 
-                  <h2>{item.name}</h2>
+                  <h2>
+                    {item.name}
+                  </h2>
 
-                  <p>₹{item.price}</p>
+                  <p>
+                    ₹{item.price}
+                  </p>
                 </Link>
 
-               
-                      <button 
-                        className="btn btn-outline-success w-50" 
-                        onClick={() => { 
-                          addToCart(product); 
-                          alert(`Added ${product.name} to cart!`);
-                        }}
-                      >
-                        Add to carts
-                      </button>
-                      <button 
-                        className="btn btn-success w-50" 
-                        onClick={() => router.push(`/checkout/${product.id}`)}
-                      >
-                        Buy
-                      </button>
+                <button
+                  className="btn btn-outline-success w-50"
+                  onClick={() => {
+                    addToCart(item);
+
+                    alert(
+                      `Added ${item.name} to cart!`
+                    );
+                  }}
+                >
+                  Add to Cart
+                </button>
+
+                <button
+                  className="btn btn-success w-50"
+                  onClick={() =>
+                    router.push(
+                      `/checkout/${itemId}`
+                    )
+                  }
+                >
+                  Buy
+                </button>
               </div>
             );
           })
